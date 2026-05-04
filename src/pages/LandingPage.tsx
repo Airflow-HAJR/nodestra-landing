@@ -102,7 +102,7 @@ export function LandingPage() {
   );
 
   const openDemo = useCallback(() => {
-    window.open("https://calendly.com/patra-ritvik/nodestra-meeting", "_blank", "noopener,noreferrer");
+    window.open("https://calendly.com/patra-ritvik/30min", "_blank", "noopener,noreferrer");
   }, []);
 
   const { scrollTo } = useLenisScroll();
