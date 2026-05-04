@@ -8,6 +8,7 @@ type Props = {
   onSelect: (id: string) => void
   onBookDemo: () => void
   progress: number
+  signInHref: string
 }
 
 /**
@@ -29,6 +30,7 @@ export function LandingNav({
   onSelect,
   onBookDemo,
   progress,
+  signInHref,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const tabRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
@@ -151,9 +153,9 @@ export function LandingNav({
       </div>
 
       <div className="lp-topbar-side lp-topbar-side-right">
-        <Link to="/sign-in" className="lp-nav-link">
+        <a href={signInHref} className="lp-nav-link">
           Sign in
-        </Link>
+        </a>
         <button type="button" className="lp-btn lp-btn-primary" onClick={onBookDemo}>
           Book demo
         </button>

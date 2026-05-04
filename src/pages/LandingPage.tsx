@@ -21,6 +21,7 @@ import {
   CurveCarousel,
   type CurveCarouselItem,
 } from "../features/landing/components/CurveCarousel";
+import { SIGN_IN_PAGE_URL } from "../lib/appConfig";
 
 const CAROUSEL_ITEMS: CurveCarouselItem[] = [
   {
@@ -143,6 +144,7 @@ export function LandingPage() {
         onSelect={scrollToSection}
         onBookDemo={openDemo}
         progress={0}
+        signInHref={SIGN_IN_PAGE_URL}
       />
 
       <main>
@@ -231,12 +233,12 @@ export function LandingPage() {
                 onClick={openDemo}
                 className="!h-12 !px-8 !text-[15px]"
               />
-              <Link
-                to="/sign-in"
+              <a
+                href={SIGN_IN_PAGE_URL}
                 className="lp-btn lp-btn-ghost lp-btn-lg lp-btn-ghost-inv"
               >
                 {CONVERSION_CONTENT.secondaryCta}
-              </Link>
+              </a>
             </div>
 
 
@@ -277,7 +279,7 @@ export function LandingPage() {
               <ul>
                 <li><a href="mailto:hello@nodestra.com">Contact</a></li>
                 <li><button type="button" onClick={openDemo}>Book Demo</button></li>
-                <li><Link to="/sign-in">Sign In</Link></li>
+                <li><a href={SIGN_IN_PAGE_URL}>Sign In</a></li>
                 <li><Link to="/create-account">Create Account</Link></li>
               </ul>
             </div>
