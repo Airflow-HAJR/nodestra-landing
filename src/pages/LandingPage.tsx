@@ -123,12 +123,12 @@ export function LandingPage() {
                 onClick={openDemo}
                 className="!h-12 !px-8 !text-[15px]"
               />
-              <Link
-                to="/sign-in"
+              <a
+                href={import.meta.env.VITE_SIGN_IN_PAGE}
                 className="lp-btn lp-btn-ghost lp-btn-lg lp-btn-ghost-inv"
               >
                 {CONVERSION_CONTENT.secondaryCta}
-              </Link>
+              </a>
             </div>
 
 
@@ -169,7 +169,7 @@ export function LandingPage() {
               <ul>
                 <li><a href="mailto:hello@nodestra.com">Contact</a></li>
                 <li><button type="button" onClick={openDemo}>Book Demo</button></li>
-                <li><Link to="/sign-in">Sign In</Link></li>
+                <li><a href={import.meta.env.VITE_SIGN_IN_PAGE}>Sign In</a></li>
                 <li><Link to="/create-account">Create Account</Link></li>
               </ul>
             </div>
