@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Migra';
+  src: url('/fonts/Migra-Extrabold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PP Neue York';
+  src: url('/fonts/PPNeueYork-NormalLight.otf') format('opentype');
+  font-weight: 100 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PP Neue York';
+  src: url('/fonts/PPNeueYork-NormalLightItalic.otf') format('opentype');
+  font-weight: 100 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PP Neue York';
+  src: url('/fonts/PPNeueYork-NormalMedium.otf') format('opentype');
+  font-weight: 401 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PP Neue York';
+  src: url('/fonts/PPNeueYork-NormalMediumItalic.otf') format('opentype');
+  font-weight: 401 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PP Neue York';
+  src: url('/fonts/PPNeueYork-NormalExtrabold.otf') format('opentype');
+  font-weight: 601 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PP Neue York';
+  src: url('/fonts/PPNeueYork-NormalExtraboldItalic.otf') format('opentype');
+  font-weight: 601 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: 'PP Neue York', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
