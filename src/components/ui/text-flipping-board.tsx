@@ -27,13 +27,10 @@ type AccentColor = {
 };
 
 const ACCENT_COLORS: AccentColor[] = [
-  { top: "bg-red-600", bottom: "bg-red-700", text: "text-white" },
-  { top: "bg-orange-500", bottom: "bg-orange-600", text: "text-white" },
-  { top: "bg-yellow-400", bottom: "bg-yellow-500", text: "text-neutral-900" },
-  { top: "bg-green-600", bottom: "bg-green-700", text: "text-white" },
-  { top: "bg-blue-600", bottom: "bg-blue-700", text: "text-white" },
-  { top: "bg-violet-600", bottom: "bg-violet-700", text: "text-white" },
-  { top: "bg-white", bottom: "bg-neutral-100", text: "text-neutral-900" },
+  { top: "#0F1423", bottom: "#0F1423", text: "#FFFFFF" },
+  { top: "#4A5278", bottom: "#4A5278", text: "#FFFFFF" },
+  { top: "#9299B8", bottom: "#9299B8", text: "#FFFFFF" },
+  { top: "#C1C7D8", bottom: "#C1C7D8", text: "#0F1423" },
 ];
 
 function normalizeTarget(value: string) {
@@ -165,12 +162,12 @@ const FlapCell = React.memo(function FlapCell({
 
   const textCx =
     "absolute inset-x-0 flex select-none items-center justify-center font-mono font-bold tracking-wide";
-  const topBg = accent?.top ?? "bg-neutral-200/80 dark:bg-neutral-900";
-  const bottomBg = accent?.bottom ?? "bg-neutral-200/80 dark:bg-neutral-900";
-  const textColor = accent?.text ?? "text-neutral-800 dark:text-white";
+  const topBg = accent?.top;
+  const bottomBg = accent?.bottom;
+  const textColor = accent?.text;
 
-  const flapTopBg = prevAccent?.top ?? "bg-neutral-100 dark:bg-neutral-800";
-  const flapTextColor = prevAccent?.text ?? "text-neutral-800 dark:text-white";
+  const flapTopBg = prevAccent?.top;
+  const flapTextColor = prevAccent?.text;
 
   const bottomDelay = flipDuration * 0.5;
 
@@ -187,13 +184,13 @@ const FlapCell = React.memo(function FlapCell({
         {/* Static top – new character top half */}
         <div
           className={cn(
-            "absolute inset-x-0 top-0 h-[calc(50%-0.5px)] overflow-hidden rounded-t-[3px]",
-            topBg,
+            "absolute inset-x-0 top-0 h-[calc(50%-0.5px)] overflow-hidden rounded-t-[3px] bg-neutral-200/80 dark:bg-neutral-900",
           )}
+          style={topBg ? { backgroundColor: topBg } : undefined}
         >
           <div
-            className={cn(textCx, textColor, "top-0 h-[200%]")}
-            style={CELL_TEXT_STYLE}
+            className={cn(textCx, "top-0 h-[200%] text-neutral-800 dark:text-white")}
+            style={{ ...CELL_TEXT_STYLE, ...(textColor ? { color: textColor } : {}) }}
           >
             {show}
           </div>
@@ -202,13 +199,13 @@ const FlapCell = React.memo(function FlapCell({
         {/* Static bottom – new character bottom half */}
         <div
           className={cn(
-            "absolute inset-x-0 bottom-0 h-[calc(50%-0.5px)] overflow-hidden rounded-b-[3px]",
-            bottomBg,
+            "absolute inset-x-0 bottom-0 h-[calc(50%-0.5px)] overflow-hidden rounded-b-[3px] bg-neutral-200/80 dark:bg-neutral-900",
           )}
+          style={bottomBg ? { backgroundColor: bottomBg } : undefined}
         >
           <div
-            className={cn(textCx, textColor, "bottom-0 h-[200%]")}
-            style={CELL_TEXT_STYLE}
+            className={cn(textCx, "bottom-0 h-[200%] text-neutral-800 dark:text-white")}
+            style={{ ...CELL_TEXT_STYLE, ...(textColor ? { color: textColor } : {}) }}
           >
             {show}
           </div>
@@ -228,9 +225,9 @@ const FlapCell = React.memo(function FlapCell({
           <motion.div
             key={flipId}
             className={cn(
-              "absolute inset-x-0 top-0 z-10 h-[calc(50%-0.5px)] origin-bottom overflow-hidden rounded-t-[3px] backface-hidden transform-3d",
-              flapTopBg,
+              "absolute inset-x-0 top-0 z-10 h-[calc(50%-0.5px)] origin-bottom overflow-hidden rounded-t-[3px] backface-hidden transform-3d bg-neutral-100 dark:bg-neutral-800",
             )}
+            style={flapTopBg ? { backgroundColor: flapTopBg } : undefined}
             initial={{ rotateX: 0 }}
             animate={{ rotateX: -100 }}
             transition={{
@@ -239,8 +236,11 @@ const FlapCell = React.memo(function FlapCell({
             }}
           >
             <div
-              className={cn(textCx, flapTextColor, "top-0 h-[200%]")}
-              style={CELL_TEXT_STYLE}
+              className={cn(textCx, "top-0 h-[200%] text-neutral-800 dark:text-white")}
+              style={{
+                ...CELL_TEXT_STYLE,
+                ...(flapTextColor ? { color: flapTextColor } : {}),
+              }}
             >
               {showPrev}
             </div>
@@ -258,9 +258,9 @@ const FlapCell = React.memo(function FlapCell({
           <motion.div
             key={`b${flipId}`}
             className={cn(
-              "absolute inset-x-0 bottom-0 z-10 h-[calc(50%-0.5px)] origin-top overflow-hidden rounded-b-[3px] backface-hidden transform-3d",
-              bottomBg,
+              "absolute inset-x-0 bottom-0 z-10 h-[calc(50%-0.5px)] origin-top overflow-hidden rounded-b-[3px] backface-hidden transform-3d bg-neutral-200/80 dark:bg-neutral-900",
             )}
+            style={bottomBg ? { backgroundColor: bottomBg } : undefined}
             initial={{ rotateX: 90 }}
             animate={{ rotateX: 0 }}
             transition={{
@@ -270,8 +270,8 @@ const FlapCell = React.memo(function FlapCell({
             }}
           >
             <div
-              className={cn(textCx, textColor, "bottom-0 h-[200%]")}
-              style={CELL_TEXT_STYLE}
+              className={cn(textCx, "bottom-0 h-[200%] text-neutral-800 dark:text-white")}
+              style={{ ...CELL_TEXT_STYLE, ...(textColor ? { color: textColor } : {}) }}
             >
               {show}
             </div>

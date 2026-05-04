@@ -25,7 +25,7 @@ export const CHAPTERS: LandingChapter[] = [
     response:
       "Nodestra understands the ask, identifies the passenger context, and starts speaking the route back in seconds.",
     stats: [
-      { label: "Languages", value: "12+", delta: "same flow, localized voice" },
+      { label: "Languages", value: "32+", delta: "same flow, localized voice" },
       {
         label: "Passenger side",
         value: "0 apps",
