@@ -151,9 +151,9 @@ export function LandingNav({
       </div>
 
       <div className="lp-topbar-side lp-topbar-side-right">
-        <a href={import.meta.env.VITE_SIGN_IN_PAGE} className="lp-nav-link">
+        <Link to="/sign-in" className="lp-nav-link">
           Sign in
-        </a>
+        </Link>
         <button type="button" className="lp-btn lp-btn-primary" onClick={onBookDemo}>
           Book demo
         </button>

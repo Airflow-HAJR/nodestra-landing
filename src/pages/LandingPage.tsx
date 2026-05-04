@@ -1,20 +1,99 @@
 import { useCallback, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ButtonColorful } from "../components/ui/button-colorful";
+import "lenis/dist/lenis.css";
 import "../styles/landing.css";
 
 import { CONVERSION_CONTENT } from "../features/landing/content";
 import type { NavItem } from "../features/landing/content";
 import { LandingNav } from "../features/landing/components/LandingNav";
 import { HeroStage } from "../features/landing/components/HeroStage";
+import {
+  ProductInfrastructure,
+  ProductIntro,
+  WhyNodestra,
+} from "../features/landing/components/ProductIntro";
 import { ProofGrid } from "../features/landing/components/ProofGrid";
 import { FaqAccordion } from "../features/landing/components/FaqAccordion";
+import { VoiceFeaturesSection } from "../features/landing/components/VoiceFeaturesSection";
+import { useLenisScroll } from "../features/landing/hooks/useLenisScroll";
+import {
+  CurveCarousel,
+  type CurveCarouselItem,
+} from "../features/landing/components/CurveCarousel";
+
+const CAROUSEL_ITEMS: CurveCarouselItem[] = [
+  {
+    id: "senior",
+    background: "#31405F",
+    label: "The senior traveler",
+    caption:
+      "Nodestra provides clear voice guidance through every turn, removing the need for squinting at signs or navigating complex apps.",
+  },
+  {
+    id: "first-time",
+    background: "#4A5278",
+    label: "The first-time visitor",
+    caption:
+      "Nodestra acts as a personal guide via a simple call, ensuring guests never have to waste time downloading a terminal app.",
+  },
+  {
+    id: "non-native",
+    background: "#233149",
+    label: "The non-native speaker",
+    caption:
+      "Nodestra instantly switches between 32+ languages, offering helpful support without forcing users to dig through phone settings.",
+  },
+  {
+    id: "accessibility",
+    background: "#42506D",
+    label: "The wheelchair user",
+    caption:
+      "Nodestra routes guests via elevators and calls ahead for assistance, all through a reliable and familiar phone interface.",
+  },
+  {
+    id: "low-tech",
+    background: "#0F1423",
+    label: "The low-tech traveler",
+    caption:
+      "Nodestra delivers premium navigation through a basic call or text, making it perfect for guests who want to avoid the app store.",
+  },
+  {
+    id: "family",
+    background: "#55607E",
+    label: "The family with kids",
+    caption:
+      "Nodestra finds stroller-friendly paths and washrooms hands-free, so parents don't have to fumble with a screen while juggling toddlers.",
+  },
+  {
+    id: "rushed",
+    background: "#384764",
+    label: "The tight connection",
+    caption:
+      "Nodestra calculates the fastest route to the next gate instantly, providing live voice directions when there's no time for a map to load.",
+  },
+  {
+    id: "anxious",
+    background: "#667095",
+    label: "The anxious traveler",
+    caption:
+      "Nodestra serves as a calm, patient companion on the other end of the line, repeating instructions until the guest feels at ease.",
+  },
+  {
+    id: "business",
+    background: "#2B3854",
+    label: "The business traveler",
+    caption:
+      "Nodestra provides heads-up navigation for professionals on the move, allowing them to find lounges or gates without ever looking down at a phone.",
+  },
+];
 
 export function LandingPage() {
   const pageNavItems = useMemo<NavItem[]>(
     () => [
       { id: "hero", label: "Home" },
       { id: "product", label: "Product" },
+      { id: "who", label: "Who" },
       { id: "proof", label: "Benefits" },
       { id: "conversion", label: "Book" },
     ],
@@ -25,11 +104,16 @@ export function LandingPage() {
     window.open("https://calendly.com/patra-ritvik/nodestra-meeting", "_blank", "noopener,noreferrer");
   }, []);
 
-  const scrollToSection = useCallback((id: string) => {
-    const target = document.getElementById(id);
-    if (!target) return;
-    target.scrollIntoView({ behavior: "smooth" });
-  }, []);
+  const { scrollTo } = useLenisScroll();
+
+  const scrollToSection = useCallback(
+    (id: string) => {
+      const target = document.getElementById(id);
+      if (!target) return;
+      scrollTo(target);
+    },
+    [scrollTo],
+  );
 
   const overviewRef = useRef<HTMLDivElement>(null);
 
@@ -41,15 +125,16 @@ export function LandingPage() {
         onClick={(e) => {
           e.preventDefault();
           overviewRef.current?.focus();
-          overviewRef.current?.scrollIntoView({ behavior: "smooth" });
+          if (overviewRef.current) scrollTo(overviewRef.current);
         }}
       >
         Skip to overview
       </a>
 
       <p className="sr-only">
-        Nodestra is an airport operations platform combining live flight data, a
-        visual map editor, and voice-first passenger wayfinding.
+        Nodestra is a voice and messaging platform that lets airport passengers
+        get navigation, flight updates, and terminal information by phone call
+        or text message.
       </p>
 
       <LandingNav
@@ -70,15 +155,38 @@ export function LandingPage() {
         />
 
         <div className="lp-content-floor">
-        <div id="product">
-          <div className="lp-funded-banner">
-            <span className="lp-funded-banner-text">Proudly built with voice AI industry leaders</span>
-            <img src="/elevenlabs-logo.png" alt="ElevenLabs" className="lp-funded-logo lp-funded-logo-elevenlabs" />
-            <img src="/vapi-logo.svg" alt="Vapi" className="lp-funded-logo lp-funded-logo-vapi" />
-          </div>
+          <ProductIntro />
+
+          <VoiceFeaturesSection />
+
+          <ProductInfrastructure />
+
+          <WhyNodestra />
+
+          <section
+            id="who"
+            className="lp-snap-section lp-carousel-section"
+            aria-labelledby="lp-carousel-title"
+          >
+            <div className="lp-carousel-head lp-reveal">
+              <h2 id="lp-carousel-title" className="lp-product-h2">
+                Nodestra's for every passenger, no matter who they are.
+              </h2>
+            </div>
+            <CurveCarousel
+              items={CAROUSEL_ITEMS}
+              radius={510}
+              cardHeight={360}
+              tileWidth={370}
+              perspective={860}
+              cameraOffset={140}
+              gap={14}
+              maxVisibleAngle={118}
+            />
+          </section>
 
           <ProofGrid />
-        </div>
+
         <FaqAccordion />
 
         <section className="lp-stat-strip lp-snap-section" aria-labelledby="lp-stat-title">
@@ -123,12 +231,12 @@ export function LandingPage() {
                 onClick={openDemo}
                 className="!h-12 !px-8 !text-[15px]"
               />
-              <a
-                href={import.meta.env.VITE_SIGN_IN_PAGE}
+              <Link
+                to="/sign-in"
                 className="lp-btn lp-btn-ghost lp-btn-lg lp-btn-ghost-inv"
               >
                 {CONVERSION_CONTENT.secondaryCta}
-              </a>
+              </Link>
             </div>
 
 
@@ -148,7 +256,7 @@ export function LandingPage() {
               <span className="lp-footer-wordmark">nodestra<span className="lp-footer-period">.</span></span>
             </div>
             <p className="lp-footer-tag">
-              The operating system for airport operations.
+              Voice and messaging guidance for airport passengers.
             </p>
           </div>
 
@@ -169,7 +277,7 @@ export function LandingPage() {
               <ul>
                 <li><a href="mailto:hello@nodestra.com">Contact</a></li>
                 <li><button type="button" onClick={openDemo}>Book Demo</button></li>
-                <li><a href={import.meta.env.VITE_SIGN_IN_PAGE}>Sign In</a></li>
+                <li><Link to="/sign-in">Sign In</Link></li>
                 <li><Link to="/create-account">Create Account</Link></li>
               </ul>
             </div>

@@ -1,7 +1,7 @@
 type ForThemItem = { value: string; unit: string; label: string; darkUnit?: boolean };
 
 const FOR_THEM: ForThemItem[] = [
-  { value: "12+", unit: "", label: "languages supported for international passengers." },
+  { value: "32+", unit: "", label: "languages supported for international passengers." },
   { value: "4s", unit: "", label: "between a flight update and passenger notification." },
   { value: "0", unit: "", label: "apps to download. Just a phone call.", darkUnit: true },
 ];
