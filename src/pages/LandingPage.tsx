@@ -235,6 +235,8 @@ export function LandingPage() {
               />
               <a
                 href={SIGN_IN_PAGE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="lp-btn lp-btn-ghost lp-btn-lg lp-btn-ghost-inv"
               >
                 {CONVERSION_CONTENT.secondaryCta}
@@ -279,7 +281,7 @@ export function LandingPage() {
               <ul>
                 <li><a href="mailto:hello@nodestra.com">Contact</a></li>
                 <li><button type="button" onClick={openDemo}>Book Demo</button></li>
-                <li><a href={SIGN_IN_PAGE_URL}>Sign In</a></li>
+                <li><a href={SIGN_IN_PAGE_URL} target="_blank" rel="noopener noreferrer">Sign In</a></li>
                 <li><Link to="/create-account">Create Account</Link></li>
               </ul>
             </div>

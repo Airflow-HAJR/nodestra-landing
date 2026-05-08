@@ -153,7 +153,7 @@ export function LandingNav({
       </div>
 
       <div className="lp-topbar-side lp-topbar-side-right">
-        <a href={signInHref} className="lp-nav-link">
+        <a href={signInHref} target="_blank" rel="noopener noreferrer" className="lp-nav-link">
           Sign in
         </a>
         <button type="button" className="lp-btn lp-btn-primary" onClick={onBookDemo}>
