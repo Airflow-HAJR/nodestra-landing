@@ -1,16 +1,24 @@
-/* Nodestra landing — demo-led direction */
+/* Nodestra landing — Heath palette */
 :root {
-  --blue-core: #1d4ed8;
-  --blue-mid: #3b82f6;
-  --blue-light: #93c5fd;
-  --blue-pale: #eff6ff;
-  --tint: #fafaf9;
-  --text-dark: #0a0a0a;
-  --text-mid: #1f2937;
-  --text-soft: #6b7280;
-  --white: #fafaf9;
-  --chip-bg: #f5f5f4;
-  --border: #d6d3d1;
+  /* Heath colour chord */
+  --plum: #3A1A3D;
+  --wine: #6E3D5F;
+  --mauve: #A66B7A;
+  --blush: #D49AA0;
+  --sign: #F4F2F4;
+
+  /* Semantic aliases (keep legacy names so inline TSX refs still resolve) */
+  --blue-core: #6E3D5F;   /* wine */
+  --blue-mid: #A66B7A;    /* mauve */
+  --blue-light: #D49AA0;  /* blush */
+  --blue-pale: #EDE8EE;   /* warm near-white */
+  --tint: #EAE5EB;
+  --text-dark: #3A1A3D;   /* plum */
+  --text-mid: #6E3D5F;    /* wine */
+  --text-soft: #A66B7A;   /* mauve */
+  --white: #F4F2F4;       /* sign */
+  --chip-bg: #E0D9E2;
+  --border: #C5B2C8;
 
   --ink: var(--text-dark);
   --ink-2: var(--text-mid);
@@ -18,13 +26,13 @@
   --paper-2: var(--chip-bg);
   --rule: var(--border);
   --muted: var(--text-soft);
-  --accent: #e63946;
-  --accent-ink: var(--white);
-  --c-sign: #fafaf9;
-  --c-stop: #e63946;
-  --c-route: #1d4ed8;
-  --c-caution: #ffb800;
-  --c-ink: #0a0a0a;
+  --accent: #3A1A3D;      /* plum — primary accent */
+  --accent-ink: #F4F2F4;
+  --c-sign: #F4F2F4;
+  --c-stop: #A66B7A;
+  --c-route: #6E3D5F;
+  --c-caution: #D49AA0;   /* blush — highlight / rule gradient */
+  --c-ink: #3A1A3D;
 
   --hand: 'Inter', sans-serif;
   --display: 'Inter', sans-serif;
@@ -90,9 +98,9 @@
 }
 
 .lp .box.solid {
-  background: var(--text-dark);
+  background: var(--wine);
   color: var(--white);
-  border-color: var(--text-dark);
+  border-color: var(--wine);
 }
 
 .lp .box.solid .lbl {
@@ -130,7 +138,7 @@
   padding: 14px 20px;
   border: 1.5px solid var(--border);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(244, 242, 244, 0.95);
   backdrop-filter: blur(6px);
 }
 
@@ -284,9 +292,9 @@
   flex-direction: column;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.6) inset,
-    0 18px 36px -18px rgba(15, 22, 36, 0.22),
-    0 6px 14px -8px rgba(60, 100, 255, 0.18);
+    0 1px 0 rgba(244, 242, 244, 0.6) inset,
+    0 18px 36px -18px rgba(58, 26, 61, 0.22),
+    0 6px 14px -8px rgba(110, 61, 95, 0.18);
   overflow: hidden;
   min-height: 0;
   border: none;
@@ -298,7 +306,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(120% 60% at 0% 0%, rgba(255, 255, 255, 0.35), transparent 60%);
+  background: radial-gradient(120% 60% at 0% 0%, rgba(244, 242, 244, 0.35), transparent 60%);
   border-radius: 18px;
 }
 
@@ -310,9 +318,9 @@
 .lp .bento-card:hover {
   transform: translateY(-6px) scale(1.01);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.7) inset,
-    0 30px 56px -18px rgba(60, 100, 255, 0.34),
-    0 12px 24px -10px rgba(15, 22, 36, 0.18);
+    0 1px 0 rgba(244, 242, 244, 0.7) inset,
+    0 30px 56px -18px rgba(110, 61, 95, 0.34),
+    0 12px 24px -10px rgba(58, 26, 61, 0.18);
   z-index: 2;
 }
 
@@ -692,7 +700,7 @@
   height: 38px;
   border-radius: 999px;
   border: 1.5px solid var(--border);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(244, 242, 244, 0.9);
   color: var(--text-dark);
   display: flex;
   align-items: center;

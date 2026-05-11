@@ -74,9 +74,9 @@ function NodestraMark() {
       }}
     >
       <img
-        src="/assets/nodestra-logo.png"
+        src="/assets/nodestra-mark.svg"
         alt=""
-        style={{ width: 26, height: 22, objectFit: "contain" }}
+        style={{ width: 36, height: 29, objectFit: "contain" }}
       />
       nodestra
     </span>
