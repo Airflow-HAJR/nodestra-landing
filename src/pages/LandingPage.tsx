@@ -76,7 +76,7 @@ function NodestraMark() {
       <img
         src="/assets/nodestra-mark.svg"
         alt=""
-        style={{ width: 36, height: 29, objectFit: "contain" }}
+        style={{ width: 27, height: 22, objectFit: "contain" }}
       />
       nodestra
     </span>
@@ -205,7 +205,7 @@ function OrbDemo({ tall = false }: { tall?: boolean }) {
         position: "relative",
         borderRadius: 18,
         padding: "36px 28px 18px",
-        background: "linear-gradient(180deg,var(--white) 0%,var(--chip-bg) 100%)",
+        background: "linear-gradient(180deg,var(--white) 0%,#F5F2F6 100%)",
         border: "1.5px solid var(--border)",
         overflow: "hidden",
         minHeight: tall ? 500 : 460,
@@ -391,7 +391,7 @@ function HeroDemo({ onBookDemo }: { onBookDemo: () => void }) {
       <div className="grid g12" style={{ marginTop: 16, alignItems: "end" }}>
         <div className="col-span-7">
           <h1 style={{ fontSize: 42, lineHeight: 1.05, letterSpacing: "-0.01em" }}>
-            Ask Nodestra anything a traveler would ask your terminal.
+            Nodestra AI answers every question a traveler asks in your airport.
           </h1>
           <p
             style={{
@@ -402,7 +402,7 @@ function HeroDemo({ onBookDemo }: { onBookDemo: () => void }) {
               maxWidth: "55ch",
             }}
           >
-            Real ops data. Real connections. Real answer in ~120ms. No signup.
+            Simplify your airport's experience with voice intelligence.
           </p>
         </div>
         <div className="col-span-5 row" style={{ justifyContent: "flex-end", gap: 10 }}>
@@ -455,14 +455,14 @@ function ProblemFraming() {
             <div
               style={{
                 fontFamily: "var(--display)",
-                fontSize: 84,
+                fontSize: 56,
                 lineHeight: 1,
                 color: "var(--blue-core)",
                 letterSpacing: "-0.02em",
               }}
             >
               3.8
-              <span style={{ fontSize: 36, color: "var(--text-soft)" }}>/10</span>
+              <span style={{ fontSize: 28, color: "var(--text-soft)" }}>/10</span>
             </div>
             <p
               style={{
@@ -487,7 +487,7 @@ function ProblemFraming() {
                 fontFamily: "var(--display)",
                 lineHeight: 1,
                 letterSpacing: "-0.02em",
-                fontSize: 84,
+                fontSize: 56,
               }}
             >
               +$16
@@ -514,7 +514,7 @@ function ProblemFraming() {
                 lineHeight: 1,
                 letterSpacing: "-0.02em",
                 color: "var(--white)",
-                fontSize: 84,
+                fontSize: 56,
               }}
             >
               $millions
@@ -810,19 +810,21 @@ export function LandingPage() {
         <TopNav onBookDemo={openDemo} />
         <HeroDemo onBookDemo={openDemo} />
 
-        <SectionTag label="Why it matters" />
-        <ProblemFraming />
+        <div className="sections-grid">
+          <SectionTag label="Why it matters" />
+          <ProblemFraming />
 
-        <SectionTag label="Capabilities" />
-        <FeaturesGrid />
+          <SectionTag label="Capabilities" />
+          <FeaturesGrid />
 
-        <SectionTag label="Integrations" />
-        <IntegrationsGrid />
+          <SectionTag label="Integrations" />
+          <IntegrationsGrid />
 
-        <SectionTag label="Get a demo on your data" />
-        <FinalCTA onBookDemo={openDemo} />
+          <SectionTag label="Get a demo on your data" />
+          <FinalCTA onBookDemo={openDemo} />
 
-        <Footer />
+          <Footer />
+        </div>
       </div>
     </div>
   );

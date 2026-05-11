@@ -5,20 +5,20 @@
   --wine: #6E3D5F;
   --mauve: #A66B7A;
   --blush: #D49AA0;
-  --sign: #F4F2F4;
+  --sign: #ffffff;
 
   /* Semantic aliases (keep legacy names so inline TSX refs still resolve) */
-  --blue-core: #6E3D5F;   /* wine */
-  --blue-mid: #A66B7A;    /* mauve */
-  --blue-light: #D49AA0;  /* blush */
-  --blue-pale: #EDE8EE;   /* warm near-white */
-  --tint: #EAE5EB;
-  --text-dark: #3A1A3D;   /* plum */
-  --text-mid: #6E3D5F;    /* wine */
-  --text-soft: #A66B7A;   /* mauve */
-  --white: #F4F2F4;       /* sign */
-  --chip-bg: #E0D9E2;
-  --border: #C5B2C8;
+  --blue-core: #111111;
+  --blue-mid: #555555;
+  --blue-light: #888888;
+  --blue-pale: #F4F4F4;   /* warm near-white */
+  --tint: #F0F0F0;
+  --text-dark: #111111;
+  --text-mid: #555555;
+  --text-soft: #888888;
+  --white: #ffffff;       /* sign */
+  --chip-bg: #EBEBEB;
+  --border: #DDDDDD;
 
   --ink: var(--text-dark);
   --ink-2: var(--text-mid);
@@ -31,8 +31,8 @@
   --c-sign: #F4F2F4;
   --c-stop: #A66B7A;
   --c-route: #6E3D5F;
-  --c-caution: #D49AA0;   /* blush — highlight / rule gradient */
-  --c-ink: #3A1A3D;
+  --c-caution: #CCCCCC;   /* highlight / rule gradient */
+  --c-ink: #111111;
 
   --hand: 'Inter', sans-serif;
   --display: 'Inter', sans-serif;
@@ -52,6 +52,7 @@
   color: var(--ink);
   font-family: var(--ui);
   min-height: 100vh;
+  overflow-x: clip;
 }
 
 .lp h1,
@@ -73,6 +74,24 @@
   margin: 0 auto;
   padding: 32px max(54px, 9vw) 120px;
 }
+
+/* Vertical grid lines — only in the sections below the hero */
+.lp .sections-grid {
+  position: relative;
+}
+
+.lp .sections-grid::before,
+.lp .sections-grid::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+  pointer-events: none;
+}
+.lp .sections-grid::before { left: -6px; }
+.lp .sections-grid::after  { right: -6px; }
 
 .lp .lbl {
   font-family: var(--ui);
@@ -118,9 +137,21 @@
   border-color: var(--blue-light);
 }
 
+
 .lp .line {
-  height: 0;
-  border-top: 1.5px solid var(--border);
+  position: relative;
+  height: 1px;
+  background: transparent;
+}
+.lp .line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 1px;
+  background: var(--border);
 }
 
 .lp .line.thin {
@@ -138,7 +169,7 @@
   padding: 14px 20px;
   border: 1.5px solid var(--border);
   border-radius: 12px;
-  background: rgba(244, 242, 244, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(6px);
 }
 
@@ -225,11 +256,29 @@
 .lp .section-tag {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0;
   margin: 36px 0 14px;
+  position: relative;
+}
+
+/* Full-viewport-width horizontal rule behind the label */
+.lp .section-tag::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vw;
+  height: 1px;
+  background: var(--border);
+  z-index: 0;
 }
 
 .lp .section-tag .t {
+  position: relative;
+  z-index: 1;
+  background: var(--paper);
+  padding-right: 14px;
   font-family: var(--hand);
   font-weight: 700;
   font-size: 18px;
@@ -237,9 +286,7 @@
 }
 
 .lp .section-tag .rule {
-  flex: 1;
-  height: 1.5px;
-  background: linear-gradient(90deg, var(--border) 0%, var(--c-caution) 55%, var(--border) 100%);
+  display: none;
 }
 
 .lp .underline-hand {
@@ -292,7 +339,7 @@
   flex-direction: column;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   box-shadow:
-    0 1px 0 rgba(244, 242, 244, 0.6) inset,
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
     0 18px 36px -18px rgba(58, 26, 61, 0.22),
     0 6px 14px -8px rgba(110, 61, 95, 0.18);
   overflow: hidden;
@@ -306,7 +353,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(120% 60% at 0% 0%, rgba(244, 242, 244, 0.35), transparent 60%);
+  background: radial-gradient(120% 60% at 0% 0%, rgba(255, 255, 255, 0.35), transparent 60%);
   border-radius: 18px;
 }
 
@@ -318,7 +365,7 @@
 .lp .bento-card:hover {
   transform: translateY(-6px) scale(1.01);
   box-shadow:
-    0 1px 0 rgba(244, 242, 244, 0.7) inset,
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
     0 30px 56px -18px rgba(110, 61, 95, 0.34),
     0 12px 24px -10px rgba(58, 26, 61, 0.18);
   z-index: 2;
@@ -700,7 +747,7 @@
   height: 38px;
   border-radius: 999px;
   border: 1.5px solid var(--border);
-  background: rgba(244, 242, 244, 0.9);
+  background: rgba(255, 255, 255, 0.9);
   color: var(--text-dark);
   display: flex;
   align-items: center;
