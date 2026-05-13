@@ -22,6 +22,11 @@ const DeferredStickyFeatures = lazy(async () => {
   return { default: module.StickyFeatures };
 });
 
+function warmDeferredSections() {
+  void import("../components/ui/globe");
+  void import("../features/landing/components/StickyFeatures");
+}
+
 const GLOBE_MARKERS = [
   { id: "hello",      location: [39.9, -75.2]  as [number, number], label: "Hello" },
   { id: "hola",       location: [19.4, -99.1]  as [number, number], label: "Hola" },
@@ -926,6 +931,29 @@ function Footer() {
 export function LandingPage() {
   const openDemo = useCallback(() => {
     window.open(CALENDLY_URL, "_blank", "noopener,noreferrer");
+  }, []);
+
+  useEffect(() => {
+    const warm = () => warmDeferredSections();
+    if (typeof window === "undefined") return;
+    const browserWindow = window as Window &
+      typeof globalThis & {
+        requestIdleCallback?: (
+          callback: IdleRequestCallback,
+          options?: IdleRequestOptions,
+        ) => number;
+        cancelIdleCallback?: (id: number) => void;
+      };
+
+    if (browserWindow.requestIdleCallback && browserWindow.cancelIdleCallback) {
+      const idleId = browserWindow.requestIdleCallback(warm, {
+        timeout: 1200,
+      });
+      return () => browserWindow.cancelIdleCallback?.(idleId);
+    }
+
+    const timer = browserWindow.setTimeout(warm, 180);
+    return () => browserWindow.clearTimeout(timer);
   }, []);
 
   return (
