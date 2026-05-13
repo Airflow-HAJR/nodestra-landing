@@ -1,8 +1,9 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "../styles/landing.css";
 import { SIGN_IN_PAGE_URL } from "../lib/appConfig";
 import { Globe } from "../components/ui/globe";
 import { StickyFeatures } from "../features/landing/components/StickyFeatures";
+import { motion, useMotionValueEvent, useScroll } from "motion/react";
 
 const CALENDLY_URL = "https://calendly.com/patra-ritvik/30min";
 
@@ -94,35 +95,166 @@ function NodestraMark() {
   );
 }
 
+const NAV_LINKS = [
+  { label: "Product", sectionId: "section-product" },
+  { label: "How it works", sectionId: "section-how-it-works" },
+  { label: "Integrations", sectionId: "section-integrations" },
+  { label: "Customers", sectionId: "section-customers" },
+  { label: "Pricing", sectionId: "section-pricing" },
+];
+
+function scrollToSection(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 function TopNav({ onBookDemo }: { onBookDemo: () => void }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isNavVisible, setIsNavVisible] = useState(true);
+  const [isTopEdgeHovering, setIsTopEdgeHovering] = useState(false);
+  const [navHeight, setNavHeight] = useState(82);
+  const navRef = useRef<HTMLDivElement>(null);
+  const lastScrollYRef = useRef(0);
+  const { scrollY } = useScroll();
+
+  useEffect(() => {
+    const navEl = navRef.current;
+    if (!navEl) return;
+
+    const measureHeight = () => setNavHeight(navEl.offsetHeight);
+    measureHeight();
+
+    const ro = new ResizeObserver(measureHeight);
+    ro.observe(navEl);
+    window.addEventListener("resize", measureHeight);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measureHeight);
+    };
+  }, []);
+
+  useMotionValueEvent(scrollY, "change", (currentY) => {
+    const deltaY = currentY - lastScrollYRef.current;
+
+    if (menuOpen) {
+      setIsNavVisible(true);
+      lastScrollYRef.current = currentY;
+      return;
+    }
+
+    if (currentY <= 24) {
+      setIsNavVisible(true);
+    } else if (currentY > 180 && deltaY > 6) {
+      setIsNavVisible(false);
+    } else if (deltaY < -3) {
+      setIsNavVisible(true);
+    }
+
+    lastScrollYRef.current = currentY;
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const onMouseMove = (event: MouseEvent) => {
+      setIsTopEdgeHovering(event.clientY <= 28);
+    };
+
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      setIsTopEdgeHovering(false);
+    };
+  }, []);
+
+  const shouldShowNav = menuOpen || isNavVisible || isTopEdgeHovering;
+
   return (
-    <div className="nav-row">
-      <NodestraMark />
-      <div className="links">
-        <span>Product</span>
-        <span>How it works</span>
-        <span>Integrations</span>
-        <span>Customers</span>
-        <span>Pricing</span>
-      </div>
-      <div className="row">
-        <a
-          href={SIGN_IN_PAGE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            fontFamily: "var(--hand)",
-            fontWeight: 700,
-            fontSize: 14,
-            color: "var(--text-mid)",
-            textDecoration: "none",
+    <div className="nav-row-slot" style={{ height: `${navHeight}px` }}>
+      <div className="nav-row-fixed-shell">
+        <motion.div
+          ref={navRef}
+          className={`nav-row${menuOpen ? " nav-row--open" : ""}${!shouldShowNav ? " nav-row--hidden" : ""}`}
+          initial={false}
+          animate={shouldShowNav ? "visible" : "hidden"}
+          variants={{
+            visible: {
+              y: 0,
+              opacity: 1,
+              transition: { type: "spring", stiffness: 260, damping: 32, mass: 0.95 },
+            },
+            hidden: {
+              y: -96,
+              opacity: 0,
+              transition: { duration: 0.34, ease: [0.22, 1, 0.36, 1] },
+            },
           }}
         >
-          Sign in
-        </a>
-        <button type="button" className="btn accent" onClick={onBookDemo}>
-          Book demo →
-        </button>
+          <NodestraMark />
+          <div className="links">
+            {NAV_LINKS.map(({ label, sectionId }) => (
+              <span key={label} onClick={() => scrollToSection(sectionId)}>{label}</span>
+            ))}
+          </div>
+          <div className="row nav-row-actions">
+            <a
+              href={SIGN_IN_PAGE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-signin"
+            >
+              Sign in
+            </a>
+            <button type="button" className="btn nav-cta" onClick={onBookDemo}>
+              Book demo
+            </button>
+          </div>
+          <button
+            type="button"
+            className="nav-hamburger"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            {menuOpen ? (
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+              </svg>
+            )}
+          </button>
+          {menuOpen && (
+            <div className="nav-mobile-menu">
+              {NAV_LINKS.map(({ label, sectionId }) => (
+                <span key={label} className="nav-mobile-item" onClick={() => { setMenuOpen(false); scrollToSection(sectionId); }}>
+                  {label}
+                </span>
+              ))}
+              <div className="nav-mobile-footer">
+                <a
+                  href={SIGN_IN_PAGE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="nav-signin"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Sign in
+                </a>
+                <button
+                  type="button"
+                  className="btn nav-cta"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onBookDemo();
+                  }}
+                >
+                  Book demo
+                </button>
+              </div>
+            </div>
+          )}
+        </motion.div>
       </div>
     </div>
   );
@@ -842,22 +974,31 @@ export function LandingPage() {
     <div className="lp">
       <div className="sheet">
         <TopNav onBookDemo={openDemo} />
-        <HeroDemo onBookDemo={openDemo} />
+        <div id="section-product">
+          <HeroDemo onBookDemo={openDemo} />
+        </div>
 
         <div className="sections-grid">
-          <SectionTag label="Why it matters" />
-          <ProblemFraming />
+          <div id="section-customers">
+            <SectionTag label="Why it matters" />
+            <ProblemFraming />
+          </div>
 
-          <SectionTag label="Capabilities" />
-          <FeaturesGrid />
+          <div id="section-how-it-works">
+            <SectionTag label="Capabilities" />
+            <FeaturesGrid />
+            <StickyFeatures />
+          </div>
 
-          <StickyFeatures />
+          <div id="section-integrations">
+            <SectionTag label="Integrations" />
+            <IntegrationsGrid />
+          </div>
 
-          <SectionTag label="Integrations" />
-          <IntegrationsGrid />
-
-          <SectionTag label="Get a demo on your data" />
-          <FinalCTA onBookDemo={openDemo} />
+          <div id="section-pricing">
+            <SectionTag label="Get a demo on your data" />
+            <FinalCTA onBookDemo={openDemo} />
+          </div>
 
           <Footer />
         </div>
