@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { motion, useTransform } from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { CHAPTERS } from "../content";
-import { lenisScrollY } from "../hooks/useLenisScroll";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 
 const AUDIO_MAP = [
@@ -129,6 +128,7 @@ function FeaturePanel({
   setPanelRef,
 }: FeaturePanelProps) {
   const { reducedMotion } = useReducedMotion();
+  const { scrollY } = useScroll();
   const panelRef = useRef<HTMLDivElement | null>(null);
   const [panelTop, setPanelTop] = useState(0);
   const [viewportH, setViewportH] = useState(1);
@@ -156,22 +156,22 @@ function FeaturePanel({
     panelTop + viewportH * 0.55,
   ];
   const titleY = useTransform(
-    lenisScrollY,
+    scrollY,
     range,
     reducedMotion ? [0, 0] : [34, -28],
   );
   const dialogueY = useTransform(
-    lenisScrollY,
+    scrollY,
     range,
     reducedMotion ? [0, 0] : [18, -16],
   );
   const statsY = useTransform(
-    lenisScrollY,
+    scrollY,
     range,
     reducedMotion ? [0, 0] : [8, -10],
   );
   const clipPath = useTransform(
-    lenisScrollY,
+    scrollY,
     [range[0], panelTop - viewportH * 0.18],
     reducedMotion
       ? ["inset(0% 0% 0% 0%)", "inset(0% 0% 0% 0%)"]
