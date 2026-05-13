@@ -220,6 +220,61 @@ export const CHAPTERS: LandingChapter[] = [
       },
     ],
   },
+  {
+    id: "airport-info",
+    eyebrow: "Chapter 5",
+    title: "It knows the whole airport.",
+    caption:
+      "Lounges, security wait times, concessions, and customs — spoken on request.",
+    copy: "Beyond gate directions, passengers ask about everything in the terminal. Nodestra has answers for lounge access, customs queues, food options, and facility locations without needing a live agent.",
+    command: '"Is the flagship lounge open? How long is security?"',
+    response:
+      "Nodestra checks live facility data and queue estimates, then speaks the answer in under 4 seconds.",
+    stats: [
+      {
+        label: "Query types",
+        value: "120+",
+        delta: "FAQ categories answered",
+      },
+      {
+        label: "Live data",
+        value: "Real-time",
+        delta: "queue times and facility status",
+      },
+      {
+        label: "Agent hand-off",
+        value: "0",
+        delta: "for standard information",
+      },
+    ],
+    accent: "#1A2A70",
+    moments: [
+      {
+        id: "airport-1",
+        label: "Ask",
+        at: 0.98,
+        caption: "Lounge open? Security wait? Customs queue? Plain language.",
+        srSummary:
+          "Passengers ask about terminal facilities and wait times in plain language.",
+      },
+      {
+        id: "airport-2",
+        label: "Resolve",
+        at: 0.99,
+        caption: "Live facility status and queue depths checked in real time.",
+        srSummary:
+          "Facility status and queue depth are checked against live feeds.",
+      },
+      {
+        id: "airport-3",
+        label: "Answer",
+        at: 1.0,
+        caption: "A direct spoken answer. No redirect. No hold music.",
+        srSummary:
+          "A direct spoken answer is delivered with no redirect or hold music.",
+      },
+    ],
+  },
 ];
 
 export const CHAPTER_METRICS: ChapterMetric[] = [
