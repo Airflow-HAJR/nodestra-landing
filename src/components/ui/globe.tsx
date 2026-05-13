@@ -51,7 +51,7 @@ export function Globe({
   speed = 0.003,
   theta = 0.2,
   diffuse = 1.5,
-  mapSamples = 16000,
+  mapSamples = 12000,
 }: GlobeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointerInteracting = useRef<{ x: number; y: number } | null>(null);
@@ -118,7 +118,7 @@ export function Globe({
       const width = canvas.offsetWidth;
       if (width === 0 || globe) return;
 
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       globe = createGlobe(canvas, {
         devicePixelRatio: dpr,
         width,
