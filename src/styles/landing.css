@@ -46,10 +46,20 @@
   box-sizing: border-box;
 }
 
+#lp-bg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: #ffffff;
+  pointer-events: none;
+  will-change: background-color;
+  transition: background-color 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .lp {
   margin: 0;
   padding: 0;
-  background: var(--paper);
+  background: transparent;
   color: var(--ink);
   font-family: var(--ui);
   min-height: 100vh;
@@ -147,6 +157,8 @@
   max-width: 1180px;
   margin: 0 auto;
   padding: 32px max(43px, 5vw) 120px;
+  position: relative;
+  z-index: 1;
 }
 
 /* Vertical grid lines — only in the sections below the hero */
@@ -163,6 +175,7 @@
   width: 1px;
   background: var(--border);
   pointer-events: none;
+  transition: opacity 0.55s ease;
 }
 .lp .sections-grid::before { left: -20px; }
 .lp .sections-grid::after  { right: -20px; }
@@ -348,6 +361,7 @@
   height: 1px;
   background: var(--border);
   z-index: 0;
+  transition: background-color 0.55s ease, opacity 0.55s ease;
 }
 
 .lp .section-tag .t {
@@ -359,6 +373,7 @@
   font-weight: 700;
   font-size: 18px;
   color: var(--text-dark);
+  transition: background-color 0.55s ease, color 0.55s ease;
 }
 
 .lp .section-tag .rule {
@@ -871,7 +886,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 .lp-sf-section {
-  background: #d49aa0;
+  background: transparent;
   color: var(--ink);
   padding: 0 max(43px, 5vw);
   border-top: 1px solid var(--border);
@@ -883,6 +898,7 @@
   position: relative;
   left: 50%;
   transform: translateX(-50%);
+  transition: border-color 0.55s ease;
 }
 
 .lp-sf-header {
@@ -897,6 +913,7 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--plum);
+  transition: color 0.55s ease;
 }
 
 .lp-sf-title {
@@ -908,6 +925,7 @@
   letter-spacing: -0.01em;
   color: var(--ink);
   max-width: 10ch;
+  transition: color 0.55s ease;
 }
 
 .lp-sf-lede {
@@ -916,6 +934,7 @@
   font-size: clamp(1rem, 1.3vw, 1.2rem);
   line-height: 1.5;
   color: var(--text-mid);
+  transition: color 0.55s ease;
 }
 
 .lp-sf-container {
@@ -923,6 +942,7 @@
   grid-template-columns: minmax(200px, 30%) minmax(0, 70%);
   align-items: start;
   border-top: 1px solid var(--border);
+  transition: border-color 0.55s ease;
 }
 
 .lp-sf-left {
@@ -934,7 +954,7 @@
   justify-content: center;
   padding: 3rem 2rem 3rem 0;
   gap: 0.85rem;
-  background: #d49aa0;
+  background: transparent;
 }
 
 .lp-sf-chapter-num {
@@ -945,6 +965,7 @@
   text-transform: uppercase;
   color: var(--text-soft);
   margin: 0;
+  transition: color 0.55s ease;
 }
 
 .lp-sf-left-title {
@@ -956,7 +977,7 @@
   color: var(--ink);
   margin: 0;
   max-width: 14ch;
-  transition: color 360ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: color 0.55s ease;
 }
 
 .lp-sf-left-caption {
@@ -965,7 +986,7 @@
   color: var(--text-soft);
   margin: 0;
   max-width: 28ch;
-  transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: color 0.55s ease;
 }
 
 .lp-sf-progress {
@@ -984,6 +1005,7 @@
   bottom: 0.68rem;
   width: 1px;
   background: var(--border);
+  transition: background-color 0.55s ease;
 }
 
 .lp-sf-progress-fill {
@@ -992,7 +1014,7 @@
   top: 0.68rem;
   width: 1px;
   background: var(--plum);
-  transition: height 520ms cubic-bezier(0.34, 0.34, 0.02, 0.97);
+  transition: height 520ms cubic-bezier(0.34, 0.34, 0.02, 0.97), background-color 0.55s ease;
 }
 
 .lp-sf-progress-item {
@@ -1011,7 +1033,7 @@
   background: var(--border);
   flex-shrink: 0;
   margin-left: -1.16rem;
-  transition: background 300ms cubic-bezier(0.16, 1, 0.3, 1), transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background 300ms cubic-bezier(0.16, 1, 0.3, 1), transform 300ms cubic-bezier(0.16, 1, 0.3, 1), background-color 0.55s ease;
 }
 
 .lp-sf-progress-item--active .lp-sf-progress-dot {
@@ -1038,6 +1060,7 @@
 
 .lp-sf-progress-label span {
   color: var(--border);
+  transition: color 0.55s ease;
 }
 
 .lp-sf-progress-item--active .lp-sf-progress-label {
@@ -1048,6 +1071,7 @@
   display: flex;
   flex-direction: column;
   border-left: 1px solid var(--border);
+  transition: border-color 0.55s ease;
 }
 
 .lp-sf-panel {
@@ -1057,6 +1081,7 @@
   padding: clamp(4rem, 6vw, 6rem) clamp(2rem, 4vw, 5rem);
   border-bottom: 1px solid var(--border);
   --chapter-accent: var(--plum);
+  transition: border-color 0.55s ease;
 }
 
 .lp-sf-panel:last-child {
@@ -1082,6 +1107,7 @@
   height: 2px;
   background: var(--chapter-accent);
   margin-bottom: 1.2rem;
+  transition: background-color 0.55s ease;
 }
 
 .lp-sf-panel-kicker {
@@ -1092,6 +1118,7 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-soft);
+  transition: color 0.55s ease;
 }
 
 .lp-sf-panel-title {
@@ -1103,6 +1130,7 @@
   letter-spacing: -0.01em;
   color: var(--ink);
   max-width: 12ch;
+  transition: color 0.55s ease;
 }
 
 .lp-sf-dialogue {
@@ -1143,12 +1171,14 @@
   letter-spacing: -0.01em;
   color: var(--ink);
   max-width: 18ch;
+  transition: color 0.55s ease;
 }
 
 .lp-sf-response-block {
   max-width: 560px;
   padding-left: 1.25rem;
   border-left: 1px solid var(--border);
+  transition: border-color 0.55s ease;
 }
 
 .lp-sf-response-label {
@@ -1167,6 +1197,7 @@
   font-size: clamp(0.95rem, 1.1vw, 1.1rem);
   line-height: 1.6;
   color: var(--text-mid);
+  transition: color 0.55s ease;
 }
 
 .lp-sf-lower {
@@ -1193,6 +1224,7 @@
   min-width: 0;
   padding: 0 1.25rem;
   border-left: 1px solid var(--border);
+  transition: border-color 0.55s ease;
 }
 
 .lp-sf-stat:first-child {
@@ -1207,6 +1239,7 @@
   letter-spacing: -0.02em;
   color: var(--ink);
   line-height: 1;
+  transition: color 0.55s ease;
 }
 
 .lp-sf-stat-label {
@@ -1217,6 +1250,7 @@
   text-transform: uppercase;
   color: var(--text-soft);
   line-height: 1.3;
+  transition: color 0.55s ease;
 }
 
 .lp-sf-audio-btn {
@@ -1323,10 +1357,63 @@
   border-top-color: var(--plum);
   border-radius: 50%;
   animation: lp-sf-spin 0.75s linear infinite;
+  transition: border-color 0.55s ease;
 }
 
 @keyframes lp-sf-spin {
   to { transform: rotate(360deg); }
+}
+
+/* ── is-plum: white-on-dark overrides (toggled by GSAP ScrollTrigger) ─────── */
+.lp-sf-section.is-plum {
+  border-color: rgba(255,255,255,0.12);
+}
+.lp-sf-section.is-plum .lp-sf-eyebrow     { color: rgba(255,255,255,0.5); }
+.lp-sf-section.is-plum .lp-sf-title        { color: #ffffff; }
+.lp-sf-section.is-plum .lp-sf-lede         { color: rgba(255,255,255,0.65); }
+.lp-sf-section.is-plum .lp-sf-container    { border-color: rgba(255,255,255,0.12); }
+.lp-sf-section.is-plum .lp-sf-chapter-num  { color: rgba(255,255,255,0.45); }
+.lp-sf-section.is-plum .lp-sf-left-title   { color: #ffffff; }
+.lp-sf-section.is-plum .lp-sf-left-caption { color: rgba(255,255,255,0.55); }
+.lp-sf-section.is-plum .lp-sf-progress-track    { background: rgba(255,255,255,0.18); }
+.lp-sf-section.is-plum .lp-sf-progress-fill     { background: rgba(255,255,255,0.7); }
+.lp-sf-section.is-plum .lp-sf-progress-dot      { background: rgba(255,255,255,0.25); }
+.lp-sf-section.is-plum .lp-sf-progress-item--active .lp-sf-progress-dot { background: #ffffff; }
+.lp-sf-section.is-plum .lp-sf-progress-label    { color: rgba(255,255,255,0.4); }
+.lp-sf-section.is-plum .lp-sf-progress-label span { color: rgba(255,255,255,0.25); }
+.lp-sf-section.is-plum .lp-sf-progress-item--active .lp-sf-progress-label { color: rgba(255,255,255,0.9); }
+.lp-sf-section.is-plum .lp-sf-right         { border-color: rgba(255,255,255,0.12); }
+.lp-sf-section.is-plum .lp-sf-panel         { border-color: rgba(255,255,255,0.1); --chapter-accent: rgba(255,255,255,0.5); }
+.lp-sf-section.is-plum .lp-sf-panel-rule    { background: rgba(255,255,255,0.4); }
+.lp-sf-section.is-plum .lp-sf-panel-kicker  { color: rgba(255,255,255,0.45); }
+.lp-sf-section.is-plum .lp-sf-panel-title   { color: #ffffff; }
+.lp-sf-section.is-plum .lp-sf-command-label { color: rgba(255,255,255,0.55); }
+.lp-sf-section.is-plum .lp-sf-command       { color: #ffffff; }
+.lp-sf-section.is-plum .lp-sf-response-block { border-color: rgba(255,255,255,0.15); }
+.lp-sf-section.is-plum .lp-sf-response-label { color: rgba(255,255,255,0.55); }
+.lp-sf-section.is-plum .lp-sf-response      { color: rgba(255,255,255,0.65); }
+.lp-sf-section.is-plum .lp-sf-stat          { border-color: rgba(255,255,255,0.15); }
+.lp-sf-section.is-plum .lp-sf-stat-value    { color: #ffffff; }
+.lp-sf-section.is-plum .lp-sf-stat-label    { color: rgba(255,255,255,0.45); }
+.lp-sf-section.is-plum .lp-sf-audio-btn     { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.85); }
+.lp-sf-section.is-plum .lp-sf-audio-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.6); color: #fff; }
+.lp-sf-section.is-plum .lp-sf-audio-btn--playing { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.5); color: #fff; }
+.lp-sf-section.is-plum .lp-sf-audio-btn--ended  { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.55); }
+.lp-sf-section.is-plum .lp-sf-audio-btn--error  { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.35); }
+.lp-sf-section.is-plum .lp-sf-spinner { border-color: rgba(255,255,255,0.2); border-top-color: rgba(255,255,255,0.8); }
+
+.lp.is-plum-story .sections-grid::before,
+.lp.is-plum-story .sections-grid::after {
+  opacity: 0;
+}
+
+.lp.is-plum-story .section-tag::before {
+  background: rgba(255,255,255,0.18);
+}
+
+.lp.is-plum-story .section-tag .t {
+  background: transparent;
+  color: #ffffff;
 }
 
 @media (prefers-reduced-motion: reduce) {
