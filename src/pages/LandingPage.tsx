@@ -2,6 +2,8 @@ import { useCallback, useRef, useState } from "react";
 import "../styles/landing.css";
 import { SIGN_IN_PAGE_URL } from "../lib/appConfig";
 import { Globe } from "../components/ui/globe";
+import { StickyFeatures } from "../features/landing/components/StickyFeatures";
+import { useLenisScroll } from "../features/landing/hooks/useLenisScroll";
 
 const CALENDLY_URL = "https://calendly.com/patra-ritvik/30min";
 
@@ -80,23 +82,15 @@ const ORB_VARIANTS = [
 
 function NodestraMark() {
   return (
-    <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 8,
-        fontFamily: "var(--hand)",
-        fontWeight: 700,
-        fontSize: 18,
-        color: "var(--text-dark)",
-      }}
-    >
+    <span className="nodestra-lockup" aria-label="Nodestra">
       <img
         src="/assets/nodestra-mark.svg"
         alt=""
-        style={{ width: 27, height: 22, objectFit: "contain" }}
+        className="nodestra-logo-mark"
       />
-      nodestra
+      <span className="nodestra-wordmark">
+        nodestra<span className="nodestra-period">.</span>
+      </span>
     </span>
   );
 }
@@ -841,6 +835,8 @@ function Footer() {
 }
 
 export function LandingPage() {
+  useLenisScroll();
+
   const openDemo = useCallback(() => {
     window.open(CALENDLY_URL, "_blank", "noopener,noreferrer");
   }, []);
@@ -857,6 +853,8 @@ export function LandingPage() {
 
           <SectionTag label="Capabilities" />
           <FeaturesGrid />
+
+          <StickyFeatures />
 
           <SectionTag label="Integrations" />
           <IntegrationsGrid />

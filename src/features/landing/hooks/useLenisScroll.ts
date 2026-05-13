@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useRef } from "react";
 import Lenis from "lenis";
+import { motionValue } from "motion/react";
 
 type ScrollTarget = string | HTMLElement | number;
+
+// Shared scroll progress (0–1) that Motion components read instead of useScroll().
+// Lenis intercepts native scroll, so Motion's useScroll sees nothing without this relay.
+export const lenisScrollProgress = motionValue(0);
+
+// Absolute scroll position in px — use this for parallax that needs real pixel offsets.
+export const lenisScrollY = motionValue(0);
 
 interface UseLenisScrollResult {
   scrollTo: (target: ScrollTarget, options?: { offset?: number }) => void;
@@ -23,6 +31,11 @@ export function useLenisScroll(): UseLenisScrollResult {
       smoothWheel: true,
     });
     lenisRef.current = lenis;
+
+    lenis.on("scroll", ({ scroll, limit }: { scroll: number; limit: number }) => {
+      lenisScrollProgress.set(limit > 0 ? scroll / limit : 0);
+      lenisScrollY.set(scroll);
+    });
 
     let rafId = 0;
     const raf = (time: number) => {
