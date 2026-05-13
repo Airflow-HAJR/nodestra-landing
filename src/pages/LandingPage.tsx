@@ -1,10 +1,26 @@
-import { useCallback, useRef, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import "../styles/landing.css";
 import { SIGN_IN_PAGE_URL } from "../lib/appConfig";
-import { Globe } from "../components/ui/globe";
-import { StickyFeatures } from "../features/landing/components/StickyFeatures";
 
 const CALENDLY_URL = "https://calendly.com/patra-ritvik/30min";
+
+const DeferredGlobe = lazy(async () => {
+  const module = await import("../components/ui/globe");
+  return { default: module.Globe };
+});
+
+const DeferredStickyFeatures = lazy(async () => {
+  const module = await import("../features/landing/components/StickyFeatures");
+  return { default: module.StickyFeatures };
+});
 
 const GLOBE_MARKERS = [
   { id: "hello",      location: [39.9, -75.2]  as [number, number], label: "Hello" },
@@ -78,6 +94,76 @@ const ORB_VARIANTS = [
   "orb-yellow",
   "orb-brown",
 ] as const;
+
+function RevealOnApproach({
+  children,
+  fallback,
+  rootMargin = "320px 0px",
+}: {
+  children: ReactNode;
+  fallback: ReactNode;
+  rootMargin?: string;
+}) {
+  const hostRef = useRef<HTMLDivElement | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (isVisible) return;
+    const host = hostRef.current;
+    if (!host) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setIsVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        setIsVisible(true);
+        observer.disconnect();
+      },
+      { rootMargin },
+    );
+
+    observer.observe(host);
+    return () => observer.disconnect();
+  }, [isVisible, rootMargin]);
+
+  return <div ref={hostRef}>{isVisible ? children : fallback}</div>;
+}
+
+function GlobePlaceholder() {
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        width: "100%",
+        height: "100%",
+        borderRadius: "50%",
+        background:
+          "radial-gradient(circle at 32% 28%, rgba(255,255,255,0.98) 0%, rgba(236,236,236,0.98) 45%, rgba(214,214,214,0.98) 100%)",
+        boxShadow: "inset 0 0 0 1px rgba(17,17,17,0.08)",
+      }}
+    />
+  );
+}
+
+function StickyFeaturesPlaceholder() {
+  return (
+    <section id="features" className="lp-sf-section" aria-labelledby="lp-sf-title">
+      <div className="lp-sf-header">
+        <p className="lp-sf-eyebrow">Voice features</p>
+        <h2 id="lp-sf-title" className="lp-sf-title">
+          How Nodestra works
+        </h2>
+        <p className="lp-sf-lede">
+          Each call is answered by the terminal&apos;s live data, spoken back in the
+          passenger&apos;s language.
+        </p>
+      </div>
+    </section>
+  );
+}
 
 function NodestraMark() {
   return (
@@ -684,15 +770,19 @@ function FeaturesGrid() {
             >
               {c.id === "lang"
                 ? <div style={{ width: 220, height: 220, margin: "0 auto" }}>
-                    <Globe
-                      markers={GLOBE_MARKERS}
-                      baseColor={[0.82, 0.82, 0.82]}
-                      glowColor={[0.65, 0.65, 0.65]}
-                      markerColor={[0.1, 0.1, 0.1]}
-                      dark={0}
-                      mapBrightness={9}
-                      speed={0.004}
-                    />
+                    <RevealOnApproach fallback={<GlobePlaceholder />} rootMargin="240px 0px">
+                      <Suspense fallback={<GlobePlaceholder />}>
+                        <DeferredGlobe
+                          markers={GLOBE_MARKERS}
+                          baseColor={[0.82, 0.82, 0.82]}
+                          glowColor={[0.65, 0.65, 0.65]}
+                          markerColor={[0.1, 0.1, 0.1]}
+                          dark={0}
+                          mapBrightness={9}
+                          speed={0.004}
+                        />
+                      </Suspense>
+                    </RevealOnApproach>
                   </div>
                 : c.imgSrc
                   ? <img src={c.imgSrc} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
@@ -852,7 +942,14 @@ export function LandingPage() {
           <SectionTag label="Capabilities" />
           <FeaturesGrid />
 
-          <StickyFeatures />
+          <RevealOnApproach
+            fallback={<StickyFeaturesPlaceholder />}
+            rootMargin="720px 0px"
+          >
+            <Suspense fallback={<StickyFeaturesPlaceholder />}>
+              <DeferredStickyFeatures />
+            </Suspense>
+          </RevealOnApproach>
 
           <SectionTag label="Integrations" />
           <IntegrationsGrid />
