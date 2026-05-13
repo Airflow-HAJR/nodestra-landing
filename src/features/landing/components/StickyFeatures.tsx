@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { CHAPTERS } from "../content";
 import { useReducedMotion } from "../hooks/useReducedMotion";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const AUDIO_MAP = [
   "/assets/audio/multilingual.mp3",
@@ -267,6 +271,49 @@ export function StickyFeatures() {
     };
   }, []);
 
+  /* GSAP: snap page background white → plum when header reaches 66% of viewport */
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const headerRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const overlay = document.getElementById("lp-bg-overlay");
+    const section = sectionRef.current;
+    const header = headerRef.current;
+    const pageRoot = section?.closest(".lp");
+    if (!overlay || !section || !header || !pageRoot) return;
+
+    const goPlum = () => {
+      overlay.style.backgroundColor = "#3A1A3D";
+      section.classList.add("is-plum");
+      pageRoot.classList.add("is-plum-story");
+    };
+    const goWhite = () => {
+      overlay.style.backgroundColor = "#ffffff";
+      section.classList.remove("is-plum");
+      pageRoot.classList.remove("is-plum-story");
+    };
+
+    const st = ScrollTrigger.create({
+      trigger: header,
+      /* fire once the sticky-features heading reaches roughly two-thirds down the viewport */
+      start: "top 66%",
+      onEnter: goPlum,
+      onLeaveBack: goWhite,
+    });
+
+    /* reset as soon as the next section begins entering the viewport */
+    const stOut = ScrollTrigger.create({
+      trigger: section,
+      start: "bottom bottom",
+      onEnter: goWhite,
+      onLeaveBack: goPlum,
+    });
+
+    return () => {
+      st.kill();
+      stOut.kill();
+    };
+  }, []);
+
   function setAudioState(idx: number, state: AudioState) {
     setAudioStates((prev) => ({ ...prev, [idx]: state }));
   }
@@ -335,8 +382,9 @@ export function StickyFeatures() {
       id="features"
       className="lp-sf-section"
       aria-labelledby="lp-sf-title"
+      ref={sectionRef}
     >
-      <div className="lp-sf-header lp-reveal">
+      <div className="lp-sf-header lp-reveal" ref={headerRef}>
         <p className="lp-sf-eyebrow">Voice features</p>
         <h2 id="lp-sf-title" className="lp-sf-title">
           How Nodestra works

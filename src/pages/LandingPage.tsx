@@ -972,6 +972,7 @@ export function LandingPage() {
 
   return (
     <div className="lp">
+      <div id="lp-bg-overlay" aria-hidden="true" />
       <div className="sheet">
         <TopNav onBookDemo={openDemo} />
         <div id="section-product">
