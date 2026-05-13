@@ -11,6 +11,7 @@ type OrbScene = {
   meta: string;
   a: string;
   audioSrc?: string;
+  fadeOutSeconds?: number;
 };
 
 const ORB_SCENES: OrbScene[] = [
@@ -20,35 +21,41 @@ const ORB_SCENES: OrbScene[] = [
     q: "Can you find me a wheelchair-accessible route to baggage claim?",
     meta: "asked 412×/day",
     a: "Yes. Take the elevator beside security down one level, follow the blue accessibility signs through corridor B, then continue straight to baggage claim carousel three.",
-    audioSrc: "/assets/audio/indoor-mapping-zara.mp3",
+    audioSrc: "/assets/audio/accessibility-bunty.mp3",
   },
   {
     cap: "Multilingual",
     iso: "spanish support · concessions",
-    q: "Ayúdame a conseguir un poco de café, por favor.",
+    q: "Lo siento, realmente necesito ir al baño ahora. Por favor, ayúdame.",
     meta: "asked 280×/day",
     a: "Claro. Hay una cafetería abierta a dos minutos de aquí. Camina derecho hasta la tienda de regalos y gira a la izquierda.",
+    audioSrc: "/assets/audio/spanish-elomi.mp3",
   },
   {
     cap: "Navigation",
     iso: "indoor map · gate B12",
-    q: "How do I get to Gate B12 from security?",
+    q: "How do I get to Gate B12?",
     meta: "asked 96×/day",
     a: "Gate B12 is nine minutes from security. Walk straight past duty-free, take the escalator down, then turn right at the food court.",
+    audioSrc: "/assets/audio/gate-b12-lia.mp3",
+    fadeOutSeconds: 4,
   },
   {
     cap: "Instantaneous Updates",
     iso: "live updates · A153C",
-    q: "Hey, can you track my flight A153C?",
+    q: "Hey, can you track my flight?",
     meta: "asked 174×/day",
     a: "Yes. I'm tracking flight A153C now. It is currently on time, boarding is scheduled to start in twenty-two minutes, and I'll alert you if anything changes.",
+    audioSrc: "/assets/audio/flight-a153c-hannah.mp3",
+    fadeOutSeconds: 4,
   },
   {
-    cap: "Flight Status",
-    iso: "flight status · food timing",
-    q: "Do I have time to get some food before my flight arrives?",
+    cap: "Location-based Promotions",
+    iso: "gate proximity · concessions",
+    q: "Okay, just got to my gate, anything to do?",
     meta: "asked 41×/day",
-    a: "Yes. Your flight arrives in forty minutes. The closest quick option is four minutes away, and the current wait is six minutes.",
+    a: "Nice! Your flight boards in thirty-five minutes. There's a coffee shop two minutes back with a 10% traveler discount, and a bookstore just across the corridor if you want to browse.",
+    audioSrc: "/assets/audio/gate-promo-josh.mp3",
   },
 ];
 
@@ -57,7 +64,7 @@ const ORB_VARIANTS = [
   "orb-pink",
   "orb-blue",
   "orb-yellow",
-  "orb-black",
+  "orb-brown",
 ] as const;
 
 function NodestraMark() {
@@ -151,7 +158,13 @@ function OrbDemo({ tall = false }: { tall?: boolean }) {
     const scene = ORB_SCENES[i];
     if (scene.audioSrc) {
       const audio = new Audio(scene.audioSrc);
+      audio.volume = 1;
       audioRef.current = audio;
+      audio.ontimeupdate = () => {
+        if (!Number.isFinite(audio.duration)) return;
+        const remaining = audio.duration - audio.currentTime;
+        audio.volume = remaining <= 4 ? Math.max(0, remaining / 4) : 1;
+      };
       audio.onplay = () => setSpeaking(true);
       audio.onended = () => {
         setSpeaking(false);
@@ -221,7 +234,7 @@ function OrbDemo({ tall = false }: { tall?: boolean }) {
             fontWeight: 700,
           }}
         >
-          Tap to hear Nodestra's capabilities
+          5 key capabilities, just tap to hear. 
         </div>
         <div style={{ marginTop: 10, height: 1.5, background: "var(--border)" }} />
       </div>
@@ -391,7 +404,7 @@ function HeroDemo({ onBookDemo }: { onBookDemo: () => void }) {
       <div className="grid g12" style={{ marginTop: 16, alignItems: "end" }}>
         <div className="col-span-7">
           <h1 style={{ fontSize: 42, lineHeight: 1.05, letterSpacing: "-0.01em" }}>
-            Nodestra AI answers every question a traveler asks in your airport.
+            Simplify the passenger experience at your airport with voice intelligence.
           </h1>
           <p
             style={{
@@ -402,7 +415,7 @@ function HeroDemo({ onBookDemo }: { onBookDemo: () => void }) {
               maxWidth: "55ch",
             }}
           >
-            Simplify your airport's experience with voice intelligence.
+            The Nodestra AI agent connects with your airport's current softwares to curate personalized, intelligent guidance for every passenger to navigate through airports. All over the phone, all through voice.
           </p>
         </div>
         <div className="col-span-5 row" style={{ justifyContent: "flex-end", gap: 10 }}>

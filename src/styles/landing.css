@@ -72,7 +72,7 @@
 .lp .sheet {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 32px max(54px, 9vw) 120px;
+  padding: 32px max(43px, 5vw) 120px;
 }
 
 /* Vertical grid lines — only in the sections below the hero */
@@ -90,8 +90,8 @@
   background: var(--border);
   pointer-events: none;
 }
-.lp .sections-grid::before { left: -6px; }
-.lp .sections-grid::after  { right: -6px; }
+.lp .sections-grid::before { left: -20px; }
+.lp .sections-grid::after  { right: -20px; }
 
 .lp .lbl {
   font-family: var(--ui);
@@ -171,6 +171,8 @@
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(6px);
+  margin-left: -15px;
+  margin-right: -15px;
 }
 
 .lp .nav-row .links {
@@ -448,15 +450,12 @@
 
 .lp .orb:hover {
   transform: scale(2.025) translate(-50%, -50%);
-  filter:
-    drop-shadow(0 0 4px rgba(255, 255, 255, 1))
-    drop-shadow(0 0 8px rgba(255, 255, 255, 1))
-    drop-shadow(0 0 12px rgba(255, 255, 255, 1))
-    drop-shadow(0 0 10px rgba(145, 71, 255, 0.3))
-    drop-shadow(0 6px 26px rgba(255, 0, 0, 0.3));
+  outline: 2px solid rgba(255, 255, 255, 0.92);
+  outline-offset: 8px;
+  border-radius: 999px;
 }
 
-.lp .orb:hover .icons .svg {
+.lp .orb.is-speaking .icons .svg {
   transform: scale(1.1);
   filter: drop-shadow(0 0 4px var(--white));
   opacity: 1;
@@ -468,14 +467,11 @@
 
 .lp .orb.is-speaking {
   filter:
+    drop-shadow(0 0 4px rgba(255, 255, 255, 1))
     drop-shadow(0 0 8px rgba(255, 255, 255, 1))
-    drop-shadow(0 0 18px rgba(255, 255, 255, 1))
-    drop-shadow(0 0 18px rgba(145, 71, 255, 0.5))
-    drop-shadow(0 0 12px rgba(255, 0, 0, 0.5));
-}
-
-.lp .orb.is-speaking .container-lines {
-  animation: lpBall 15s both ease;
+    drop-shadow(0 0 12px rgba(255, 255, 255, 1))
+    drop-shadow(0 0 10px rgba(145, 71, 255, 0.3))
+    drop-shadow(0 6px 26px rgba(255, 0, 0, 0.3));
 }
 
 .lp .orb.is-speaking .icons .svg .mic {
@@ -535,7 +531,15 @@
     50% 25%, 65% 30%, 75% 42%, 75% 58%, 65% 70%,
     50% 75%, 35% 70%, 26% 58%, 25% 42%, 35% 30%
   );
+  transition: clip-path 220ms ease, transform 220ms ease;
   pointer-events: none;
+}
+
+.lp .orb.is-speaking .container-lines {
+  clip-path: polygon(
+    50% 25%, 58% 14%, 75% 42%, 80% 59%, 65% 84%,
+    50% 75%, 35% 84%, 20% 59%, 25% 42%, 42% 14%
+  );
 }
 
 .lp .orb .container-rings {
@@ -572,13 +576,11 @@
   transform: rotateY(90deg) rotateX(90deg) rotateZ(90deg);
 }
 
-.lp .orb:hover .container-rings::before,
-.lp .orb:focus-visible .container-rings::before {
+.lp .orb.is-speaking .container-rings::before {
   animation: lpRing180 10s linear infinite;
 }
 
-.lp .orb:hover .container-rings::after,
-.lp .orb:focus-visible .container-rings::after {
+.lp .orb.is-speaking .container-rings::after {
   animation: lpRing90 10s linear infinite;
 }
 
@@ -590,27 +592,6 @@
   60%  { transform: scale(1.47); }
   85%  { transform: scale(1.53); }
   100% { transform: scale(1.5); }
-}
-
-@keyframes lpBall {
-  2% {
-    clip-path: polygon(50% 25%, 50% 0, 75% 42%, 75% 58%, 65% 70%, 50% 75%, 35% 70%, 26% 58%, 25% 42%, 50% 0);
-  }
-  4% {
-    clip-path: polygon(50% 25%, 70% 0, 75% 42%, 85% 66%, 65% 100%, 50% 75%, 35% 100%, 15% 65%, 25% 42%, 30% 0);
-  }
-  6% {
-    clip-path: polygon(50% 25%, 50% 15%, 75% 42%, 75% 58%, 65% 70%, 50% 75%, 35% 70%, 26% 58%, 25% 42%, 50% 15%);
-  }
-  7%, 59% {
-    clip-path: polygon(50% 25%, 100% 12%, 75% 42%, 85% 66%, 65% 70%, 50% 75%, 35% 70%, 15% 65%, 25% 42%, 0 12%);
-  }
-  9%, 57% {
-    clip-path: polygon(50% 25%, 50% 0, 75% 42%, 75% 58%, 65% 70%, 50% 75%, 35% 70%, 26% 58%, 25% 42%, 50% 0);
-  }
-  12%, 55%, 61% {
-    clip-path: polygon(50% 25%, 65% 30%, 75% 42%, 75% 58%, 65% 70%, 50% 75%, 35% 70%, 26% 58%, 25% 42%, 35% 30%);
-  }
 }
 
 @keyframes lpRing180 {
@@ -710,6 +691,27 @@
 .lp .orb.orb-black .container-rings::before,
 .lp .orb.orb-black .container-rings::after {
   background: linear-gradient(var(--c-sign), #6b7280, #111827, #000000, #d1d5db) border-box;
+}
+
+.lp .orb.orb-brown {
+  filter:
+    drop-shadow(0 0 4px rgba(255, 255, 255, 1))
+    drop-shadow(0 0 12px rgba(255, 255, 255, 1))
+    drop-shadow(0 0 12px rgba(180, 110, 50, 0.45))
+    drop-shadow(0 0 8px rgba(120, 60, 20, 0.38));
+}
+.lp .orb.orb-brown .ball { background-color: #92400e; }
+.lp .orb.orb-brown .container-lines {
+  background-image: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.8) 15%,
+    #b45309 36%,
+    #92400e 58%
+  );
+}
+.lp .orb.orb-brown .container-rings::before,
+.lp .orb.orb-brown .container-rings::after {
+  background: linear-gradient(white, #d97706, #92400e, #78350f, #fef3c7) border-box;
 }
 
 /* Orb carousel layout */
