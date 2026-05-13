@@ -53,6 +53,8 @@
   font-family: var(--ui);
   min-height: 100vh;
   overflow-x: clip;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
 }
 
 .lp h1,
@@ -326,7 +328,7 @@
 .lp .bento-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: 320px 200px 240px;
+  grid-template-rows: 320px 200px auto;
   grid-template-areas:
     "phone phone phone phone phone phone phone lang lang lang lang lang"
     "phone phone phone phone phone phone phone analytics analytics analytics analytics analytics"
@@ -393,7 +395,13 @@
 .lp .area-lang { grid-area: lang; }
 .lp .area-analytics { grid-area: analytics; }
 .lp .area-ads { grid-area: ads; }
+.lp .area-ads .bento-img {
+  padding: 0 5px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
 .lp .area-a11y { grid-area: a11y; }
+
 
 @media (max-width: 900px) {
   .lp .bento-grid {

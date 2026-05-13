@@ -1,8 +1,19 @@
 import { useCallback, useRef, useState } from "react";
 import "../styles/landing.css";
 import { SIGN_IN_PAGE_URL } from "../lib/appConfig";
+import { Globe } from "../components/ui/globe";
 
 const CALENDLY_URL = "https://calendly.com/patra-ritvik/30min";
+
+const GLOBE_MARKERS = [
+  { id: "hello",      location: [39.9, -75.2]  as [number, number], label: "Hello" },
+  { id: "hola",       location: [19.4, -99.1]  as [number, number], label: "Hola" },
+  { id: "bonjour",    location: [48.9,   2.4]  as [number, number], label: "Bonjour" },
+  { id: "konnichiwa", location: [35.7, 139.7]  as [number, number], label: "こんにちは" },
+  { id: "nihao",      location: [31.2, 121.5]  as [number, number], label: "你好" },
+  { id: "namaste",    location: [28.6,  77.2]  as [number, number], label: "नमस्ते" },
+  { id: "ola",        location: [-23.5, -46.6] as [number, number], label: "Olá" },
+];
 
 type OrbScene = {
   cap: string;
@@ -61,8 +72,8 @@ const ORB_SCENES: OrbScene[] = [
 
 const ORB_VARIANTS = [
   "orb-green",
-  "orb-pink",
   "orb-blue",
+  "orb-pink",
   "orb-yellow",
   "orb-brown",
 ] as const;
@@ -558,6 +569,7 @@ type BentoCard = {
   t: string;
   d: string;
   img: string;
+  imgSrc?: string;
   tone: BentoTone;
   area: string;
 };
@@ -565,8 +577,8 @@ type BentoCard = {
 const BENTO_CARDS: BentoCard[] = [
   {
     id: "phone",
-    t: "Just pick up the phone.",
-    d: "Nodestra is a real phone number any traveler can call — no app install, no QR code, no signup. Easiest entry point for elderly fliers and anyone in a hurry.",
+    t: "Over the phone.",
+    d: "Not everyone can download an app, work with a clunky website, or interpret laggy kiosks. But everyone knows how to call a phone number, whether elderly, disabled, etc.",
     img: "isometric · grandmother on payphone → routes into kiosk",
     tone: "accent",
     area: "phone",
@@ -574,24 +586,25 @@ const BENTO_CARDS: BentoCard[] = [
   {
     id: "lang",
     t: "Speaks 32+ languages.",
-    d: "From Mandarin to Yorùbá. Detects spoken language automatically and switches mid-sentence. International fliers are home before they leave the jet bridge.",
+    d: "So, every international flier is supported.",
     img: "isometric · globe + speech bubbles",
     tone: "tint",
     area: "lang",
   },
   {
     id: "analytics",
-    t: "Sees the airport the way travelers do.",
-    d: "Every question is a signal. Heatmap of foot traffic, ranked list of confusing wayfinding moments, terminals where signage is failing — delivered to your ops team weekly.",
+    t: "Analytics reimagined.",
+    d: "Foot traffic, confusing concourses, common languages and pain points, all aggregated by one agent.",
     img: "isometric · terminal heatmap + dashboard",
     tone: "dark",
     area: "analytics",
   },
   {
     id: "ads",
-    t: "New ad revenue, contextually placed.",
-    d: '"You have 47 min — Tarbush Mediterranean is 4 min away, $12 avg." Nodestra promotes POIs in the exact moment a traveler can act on them. Sponsored placements with measurable conversion.',
+    t: "Ad revenue, on the map.",
+    d: 'Nodestra promotes sponsored stores as passengers pass them, so foot traffic becomes money.',
     img: "isometric · sponsored card surfacing",
+    imgSrc: "/assets/ad-revenue.png",
     tone: "white",
     area: "ads",
   },
@@ -658,7 +671,7 @@ function FeaturesGrid() {
                 fontSize: c.area === "phone" ? 14 : 13,
                 lineHeight: 1.55,
                 margin: 0,
-                maxWidth: "42ch",
+                maxWidth: (c.id === "phone" || c.id === "a11y") ? "58ch" : "42ch",
                 color: dark ? "rgba(250,250,249,.9)" : "var(--text-mid)",
               }}
             >
@@ -666,7 +679,7 @@ function FeaturesGrid() {
             </p>
             <div
               className="bento-img"
-              style={{
+              style={c.imgSrc || c.id === "lang" ? { background: "none", border: "none", padding: 0 } : {
                 background: dark
                   ? "repeating-linear-gradient(135deg, rgba(250,250,249,.10) 0 8px, transparent 8px 16px)"
                   : "repeating-linear-gradient(135deg, var(--blue-pale) 0 8px, transparent 8px 16px)",
@@ -676,7 +689,21 @@ function FeaturesGrid() {
                 color: dark ? "rgba(250,250,249,.75)" : "var(--text-soft)",
               }}
             >
-              {c.img}
+              {c.id === "lang"
+                ? <div style={{ width: 220, height: 220, margin: "0 auto" }}>
+                    <Globe
+                      markers={GLOBE_MARKERS}
+                      baseColor={[0.82, 0.82, 0.82]}
+                      glowColor={[0.65, 0.65, 0.65]}
+                      markerColor={[0.1, 0.1, 0.1]}
+                      dark={0}
+                      mapBrightness={9}
+                      speed={0.004}
+                    />
+                  </div>
+                : c.imgSrc
+                  ? <img src={c.imgSrc} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                  : c.img}
             </div>
           </div>
         );
@@ -718,6 +745,7 @@ function IntegrationsGrid() {
                     border: "1.5px dashed var(--blue-light)",
                     borderRadius: 4,
                     display: "inline-block",
+                    flexShrink: 0,
                   }}
                 />
                 <span style={{ fontFamily: "var(--hand)", fontSize: 15 }}>{it}</span>
