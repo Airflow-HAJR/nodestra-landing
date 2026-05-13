@@ -50,8 +50,12 @@ export function useLenisScroll({
         if (limit <= 0) return false;
 
         const scrollTop = wrapper.scrollTop;
-        const atTop = scrollTop <= 0;
-        const atBottom = scrollTop >= limit - 1;
+        const releaseThreshold = Math.min(
+          160,
+          Math.max(64, wrapper.clientHeight * 0.18),
+        );
+        const atTop = scrollTop <= releaseThreshold;
+        const atBottom = limit - scrollTop <= releaseThreshold;
 
         if ((atTop && deltaY < 0) || (atBottom && deltaY > 0)) {
           return false;
