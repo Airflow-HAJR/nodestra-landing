@@ -1,40 +1,70 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 import Lenis from "lenis";
 import { motionValue } from "motion/react";
 
-type ScrollTarget = string | HTMLElement | number;
-
-// Shared scroll progress (0–1) that Motion components read instead of useScroll().
-// Lenis intercepts native scroll, so Motion's useScroll sees nothing without this relay.
-export const lenisScrollProgress = motionValue(0);
-
-// Absolute scroll position in px — use this for parallax that needs real pixel offsets.
-export const lenisScrollY = motionValue(0);
-
-interface UseLenisScrollResult {
-  scrollTo: (target: ScrollTarget, options?: { offset?: number }) => void;
+interface UseLenisScrollArgs {
+  wrapperRef: RefObject<HTMLElement | null>;
+  contentRef: RefObject<HTMLElement | null>;
+  enabled: boolean;
 }
 
-export function useLenisScroll(): UseLenisScrollResult {
+export function useLenisScroll({
+  wrapperRef,
+  contentRef,
+  enabled,
+}: UseLenisScrollArgs) {
   const lenisRef = useRef<Lenis | null>(null);
+  const scrollProgress = useRef(motionValue(0)).current;
+  const scrollY = useRef(motionValue(0)).current;
 
   useEffect(() => {
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reduceMotion) return;
+    const wrapper = wrapperRef.current;
+    const content = contentRef.current;
+    if (!wrapper || !content) return;
+
+    const syncNativeScroll = () => {
+      const limit = wrapper.scrollHeight - wrapper.clientHeight;
+      scrollY.set(wrapper.scrollTop);
+      scrollProgress.set(limit > 0 ? wrapper.scrollTop / limit : 0);
+    };
+
+    syncNativeScroll();
+
+    if (!enabled) {
+      wrapper.addEventListener("scroll", syncNativeScroll, { passive: true });
+      return () => {
+        wrapper.removeEventListener("scroll", syncNativeScroll);
+      };
+    }
 
     const lenis = new Lenis({
+      wrapper,
+      content,
+      eventsTarget: wrapper,
       duration: 1.15,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      anchors: true,
       smoothWheel: true,
+      syncTouch: true,
+      virtualScroll: ({ deltaY }) => {
+        const limit = wrapper.scrollHeight - wrapper.clientHeight;
+        if (limit <= 0) return false;
+
+        const scrollTop = wrapper.scrollTop;
+        const atTop = scrollTop <= 0;
+        const atBottom = scrollTop >= limit - 1;
+
+        if ((atTop && deltaY < 0) || (atBottom && deltaY > 0)) {
+          return false;
+        }
+
+        return true;
+      },
     });
     lenisRef.current = lenis;
 
-    lenis.on("scroll", ({ scroll, limit }: { scroll: number; limit: number }) => {
-      lenisScrollProgress.set(limit > 0 ? scroll / limit : 0);
-      lenisScrollY.set(scroll);
+    const unsubscribe = lenis.on("scroll", (instance) => {
+      scrollProgress.set(instance.progress);
+      scrollY.set(instance.scroll);
     });
 
     let rafId = 0;
@@ -45,30 +75,12 @@ export function useLenisScroll(): UseLenisScrollResult {
     rafId = requestAnimationFrame(raf);
 
     return () => {
+      unsubscribe();
       cancelAnimationFrame(rafId);
       lenis.destroy();
       lenisRef.current = null;
     };
-  }, []);
+  }, [contentRef, enabled, scrollProgress, scrollY, wrapperRef]);
 
-  const scrollTo = useCallback<UseLenisScrollResult["scrollTo"]>(
-    (target, options) => {
-      const lenis = lenisRef.current;
-      if (lenis) {
-        lenis.scrollTo(target, options);
-        return;
-      }
-      if (typeof target === "string") {
-        const el = document.getElementById(target.replace(/^#/, ""));
-        el?.scrollIntoView({ behavior: "smooth", block: "start" });
-      } else if (target instanceof HTMLElement) {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      } else if (typeof target === "number") {
-        window.scrollTo({ top: target, behavior: "smooth" });
-      }
-    },
-    [],
-  );
-
-  return { scrollTo };
+  return { scrollProgress, scrollY };
 }

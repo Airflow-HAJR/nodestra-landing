@@ -871,6 +871,17 @@
   padding: clamp(3rem, 5vw, 5rem) 0 clamp(2rem, 4vw, 3.5rem);
 }
 
+.lp-sf-scroll-shell {
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior-y: auto;
+  scrollbar-width: none;
+}
+
+.lp-sf-scroll-shell::-webkit-scrollbar {
+  display: none;
+}
+
 .lp-sf-eyebrow {
   margin: 0 0 1rem;
   font-family: "Clash Grotesk", system-ui, sans-serif;
@@ -1323,6 +1334,11 @@
 @media (max-width: 900px) {
   .lp-sf-header {
     padding: 3rem 0 2rem;
+  }
+
+.lp-sf-scroll-shell {
+    height: auto;
+    overflow: visible;
   }
 
   .lp-sf-container {

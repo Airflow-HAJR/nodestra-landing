@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { motion, useTransform } from "motion/react";
+import { useEffect, useRef, useState, type CSSProperties, type RefObject } from "react";
+import { motion, useTransform, type MotionValue } from "motion/react";
 import { CHAPTERS } from "../content";
-import { lenisScrollY } from "../hooks/useLenisScroll";
+import { useLenisScroll } from "../hooks/useLenisScroll";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 
 const AUDIO_MAP = [
@@ -117,7 +117,10 @@ interface FeaturePanelProps {
   chapter: (typeof CHAPTERS)[number];
   index: number;
   audioState: AudioState;
+  isAnimated: boolean;
   onAudioClick: () => void;
+  scrollRootRef: RefObject<HTMLDivElement | null>;
+  scrollY: MotionValue<number>;
   setPanelRef: (el: HTMLDivElement | null) => void;
 }
 
@@ -125,57 +128,66 @@ function FeaturePanel({
   chapter,
   index,
   audioState,
+  isAnimated,
   onAudioClick,
+  scrollRootRef,
+  scrollY,
   setPanelRef,
 }: FeaturePanelProps) {
-  const { reducedMotion } = useReducedMotion();
   const panelRef = useRef<HTMLDivElement | null>(null);
   const [panelTop, setPanelTop] = useState(0);
   const [viewportH, setViewportH] = useState(1);
 
   useEffect(() => {
     function measure() {
-      const rect = panelRef.current?.getBoundingClientRect();
-      setPanelTop((rect?.top ?? 0) + window.scrollY);
-      setViewportH(window.innerHeight || 1);
+      const panel = panelRef.current;
+      const scrollRoot = scrollRootRef.current;
+      if (!panel || !scrollRoot) return;
+
+      const panelRect = panel.getBoundingClientRect();
+      const scrollRootRect = scrollRoot.getBoundingClientRect();
+
+      setPanelTop(panelRect.top - scrollRootRect.top + scrollRoot.scrollTop);
+      setViewportH(scrollRoot.clientHeight || window.innerHeight || 1);
     }
 
     measure();
     const ro = new ResizeObserver(measure);
     if (panelRef.current) ro.observe(panelRef.current);
+    if (scrollRootRef.current) ro.observe(scrollRootRef.current);
     window.addEventListener("resize", measure);
 
     return () => {
       ro.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, []);
+  }, [scrollRootRef]);
 
   const range: [number, number] = [
     panelTop - viewportH * 0.8,
     panelTop + viewportH * 0.55,
   ];
   const titleY = useTransform(
-    lenisScrollY,
+    scrollY,
     range,
-    reducedMotion ? [0, 0] : [34, -28],
+    isAnimated ? [34, -28] : [0, 0],
   );
   const dialogueY = useTransform(
-    lenisScrollY,
+    scrollY,
     range,
-    reducedMotion ? [0, 0] : [18, -16],
+    isAnimated ? [18, -16] : [0, 0],
   );
   const statsY = useTransform(
-    lenisScrollY,
+    scrollY,
     range,
-    reducedMotion ? [0, 0] : [8, -10],
+    isAnimated ? [8, -10] : [0, 0],
   );
   const clipPath = useTransform(
-    lenisScrollY,
+    scrollY,
     [range[0], panelTop - viewportH * 0.18],
-    reducedMotion
-      ? ["inset(0% 0% 0% 0%)", "inset(0% 0% 0% 0%)"]
-      : ["inset(8% 0% 8% 0%)", "inset(0% 0% 0% 0%)"],
+    isAnimated
+      ? ["inset(8% 0% 8% 0%)", "inset(0% 0% 0% 0%)"]
+      : ["inset(0% 0% 0% 0%)", "inset(0% 0% 0% 0%)"],
   );
 
   const setRefs = (el: HTMLDivElement | null) => {
@@ -233,29 +245,52 @@ function FeaturePanel({
 /* ─── StickyFeatures ───────────────────────────────────────────────────────── */
 
 export function StickyFeatures() {
+  const { reducedMotion } = useReducedMotion();
   const [audioStates, setAudioStates] = useState<Record<number, AudioState>>(
     {},
   );
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const playingIdxRef = useRef<number | null>(null);
   const [activePanel, setActivePanel] = useState(0);
+  const [desktopMode, setDesktopMode] = useState(false);
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const scrollRootRef = useRef<HTMLDivElement | null>(null);
+  const scrollContentRef = useRef<HTMLDivElement | null>(null);
+  const { scrollY } = useLenisScroll({
+    wrapperRef: scrollRootRef,
+    contentRef: scrollContentRef,
+    enabled: desktopMode && !reducedMotion,
+  });
+  const animatePanels = desktopMode && !reducedMotion;
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 901px)");
+    const syncDesktopMode = () => setDesktopMode(media.matches);
+
+    syncDesktopMode();
+    media.addEventListener("change", syncDesktopMode);
+
+    return () => {
+      media.removeEventListener("change", syncDesktopMode);
+    };
+  }, []);
 
   /* IntersectionObserver for active panel tracking */
   useEffect(() => {
+    const scrollRoot = scrollRootRef.current;
     const obs = panelRefs.current.map((el, i) => {
       if (!el) return null;
       const ob = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) setActivePanel(i);
         },
-        { threshold: 0.4 },
+        { threshold: 0.4, root: desktopMode ? scrollRoot : null },
       );
       ob.observe(el);
       return ob;
     });
     return () => obs.forEach((o) => o?.disconnect());
-  }, []);
+  }, [desktopMode]);
 
   /* Cleanup audio on unmount */
   useEffect(() => {
@@ -347,53 +382,58 @@ export function StickyFeatures() {
         </p>
       </div>
 
-      <div className="lp-sf-container">
-        {/* Left: sticky sidebar */}
-        <div className="lp-sf-left" aria-hidden="true">
-          <div className="lp-sf-chapter-num">
-            {String(activePanel + 1).padStart(2, "0")} / 05
-          </div>
-          <div className="lp-sf-left-title">{CHAPTERS[activePanel].title}</div>
-          <p className="lp-sf-left-caption">{CHAPTERS[activePanel].caption}</p>
+      <div className="lp-sf-scroll-shell" ref={scrollRootRef}>
+        <div className="lp-sf-container" ref={scrollContentRef}>
+          {/* Left: sticky sidebar */}
+          <div className="lp-sf-left" aria-hidden="true">
+            <div className="lp-sf-chapter-num">
+              {String(activePanel + 1).padStart(2, "0")} / 05
+            </div>
+            <div className="lp-sf-left-title">{CHAPTERS[activePanel].title}</div>
+            <p className="lp-sf-left-caption">{CHAPTERS[activePanel].caption}</p>
 
-          <div className="lp-sf-progress">
-            <div className="lp-sf-progress-track" />
-            <div
-              className="lp-sf-progress-fill"
-              style={{ height: progressFillHeight }}
-            />
-            {CHAPTERS.map((ch, i) => (
+            <div className="lp-sf-progress">
+              <div className="lp-sf-progress-track" />
               <div
-                key={ch.id}
-                className={`lp-sf-progress-item${i === activePanel ? " lp-sf-progress-item--active" : ""}`}
-              >
-                <div className="lp-sf-progress-dot" />
-                <span className="lp-sf-progress-label">
-                  <span>{String(i + 1).padStart(2, "0")}</span>
-                  {ch.title}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right: scrolling panels */}
-        <div className="lp-sf-right">
-          {CHAPTERS.map((ch, i) => {
-            const state = audioStates[i] ?? "idle";
-            return (
-              <FeaturePanel
-                key={ch.id}
-                chapter={ch}
-                index={i}
-                audioState={state}
-                onAudioClick={() => handleAudioClick(i)}
-                setPanelRef={(el) => {
-                  panelRefs.current[i] = el;
-                }}
+                className="lp-sf-progress-fill"
+                style={{ height: progressFillHeight }}
               />
-            );
-          })}
+              {CHAPTERS.map((ch, i) => (
+                <div
+                  key={ch.id}
+                  className={`lp-sf-progress-item${i === activePanel ? " lp-sf-progress-item--active" : ""}`}
+                >
+                  <div className="lp-sf-progress-dot" />
+                  <span className="lp-sf-progress-label">
+                    <span>{String(i + 1).padStart(2, "0")}</span>
+                    {ch.title}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right: scrolling panels */}
+          <div className="lp-sf-right">
+            {CHAPTERS.map((ch, i) => {
+              const state = audioStates[i] ?? "idle";
+              return (
+                <FeaturePanel
+                  key={ch.id}
+                  chapter={ch}
+                  index={i}
+                  audioState={state}
+                  isAnimated={animatePanels}
+                  onAudioClick={() => handleAudioClick(i)}
+                  scrollRootRef={scrollRootRef}
+                  scrollY={scrollY}
+                  setPanelRef={(el) => {
+                    panelRefs.current[i] = el;
+                  }}
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

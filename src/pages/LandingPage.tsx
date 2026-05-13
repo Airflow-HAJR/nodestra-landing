@@ -3,7 +3,6 @@ import "../styles/landing.css";
 import { SIGN_IN_PAGE_URL } from "../lib/appConfig";
 import { Globe } from "../components/ui/globe";
 import { StickyFeatures } from "../features/landing/components/StickyFeatures";
-import { useLenisScroll } from "../features/landing/hooks/useLenisScroll";
 
 const CALENDLY_URL = "https://calendly.com/patra-ritvik/30min";
 
@@ -835,8 +834,6 @@ function Footer() {
 }
 
 export function LandingPage() {
-  useLenisScroll();
-
   const openDemo = useCallback(() => {
     window.open(CALENDLY_URL, "_blank", "noopener,noreferrer");
   }, []);
