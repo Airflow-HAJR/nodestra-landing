@@ -38,6 +38,9 @@ export function useScrollStory({ chapterIds, onChapterChange }: UseScrollStoryAr
     }
 
     const measureActive = (entries?: IntersectionObserverEntry[]) => {
+      // PERFORMANCE: We prioritize IntersectionObserver entries over manual math.
+      // Calling getBoundingClientRect() inside the scroll listener causes "Layout Thrashing",
+      // forcing the browser to recalculate the page layout 60+ times per second.
       if (entries) {
         // Find the entry with the highest intersection ratio
         const best = entries.reduce((prev, curr) => 
@@ -47,7 +50,7 @@ export function useScrollStory({ chapterIds, onChapterChange }: UseScrollStoryAr
         return;
       }
 
-      // Fallback for initialization or resize
+      // Fallback for initialization or resize (where the frequency is much lower)
       const viewportCentre = window.innerHeight * 0.46;
       let best: { id: string; distance: number } | null = null;
 

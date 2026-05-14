@@ -118,3 +118,4 @@ Run `/qa` gstack skill against `http://localhost:5173` for visual/interaction QA
 - Do not edit copy directly in components — use `content.ts`.
 - Do not use `var(--accent)` without a scoped override; shadcn sets it to near-white globally.
 - Do not add auth/session logic here — this repo has no protected routes.
+
