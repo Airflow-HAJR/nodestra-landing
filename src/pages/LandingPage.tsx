@@ -977,6 +977,24 @@ export function LandingPage() {
     window.open(CALENDLY_URL, "_blank", "noopener,noreferrer");
   }, []);
 
+  // Global Reveal Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-revealed");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    );
+
+    document.querySelectorAll(".lp-reveal").forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="lp">
       <div id="lp-bg-overlay" aria-hidden="true" />

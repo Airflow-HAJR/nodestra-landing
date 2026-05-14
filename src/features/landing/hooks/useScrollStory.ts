@@ -37,45 +37,52 @@ export function useScrollStory({ chapterIds, onChapterChange }: UseScrollStoryAr
       onChapterChange?.(id)
     }
 
-    const measureActive = () => {
-      const viewportCentre = window.innerHeight * 0.46
-      let best: { id: string; distance: number } | null = null
+    const measureActive = (entries?: IntersectionObserverEntry[]) => {
+      if (entries) {
+        // Find the entry with the highest intersection ratio
+        const best = entries.reduce((prev, curr) => 
+          (curr.intersectionRatio > prev.intersectionRatio) ? curr : prev
+        );
+        if (best.isIntersecting) reportActive(best.target.id);
+        return;
+      }
+
+      // Fallback for initialization or resize
+      const viewportCentre = window.innerHeight * 0.46;
+      let best: { id: string; distance: number } | null = null;
 
       for (const element of elements) {
-        const rect = element.getBoundingClientRect()
-        const centre = rect.top + rect.height / 2
-        const distance = Math.abs(centre - viewportCentre)
+        const rect = element.getBoundingClientRect();
+        const centre = rect.top + rect.height / 2;
+        const distance = Math.abs(centre - viewportCentre);
         if (!best || distance < best.distance) {
-          best = { id: element.id, distance }
+          best = { id: element.id, distance };
         }
       }
 
-      if (best) reportActive(best.id)
-    }
+      if (best) reportActive(best.id);
+    };
 
-    // Observer keeps section state in sync when visibility changes abruptly,
-    // while scroll/resize measurement handles the in-between positions.
     const observer = new IntersectionObserver(
-      () => measureActive(),
-      { threshold: [0.25, 0.5, 0.75], rootMargin: '-20% 0px -20% 0px' },
-    )
+      (entries) => measureActive(entries),
+      { threshold: [0, 0.25, 0.5, 0.75, 1.0], rootMargin: '-10% 0px -10% 0px' },
+    );
 
-    elements.forEach((el) => observer.observe(el))
+    elements.forEach((el) => observer.observe(el));
 
-    // One cheap rAF loop handles both progress and the active section.
-    let ticking = false
+    let ticking = false;
     const onScroll = () => {
-      if (ticking) return
-      ticking = true
+      if (ticking) return;
+      ticking = true;
       window.requestAnimationFrame(() => {
-        measureActive()
-        const doc = document.documentElement
-        const scrollable = doc.scrollHeight - window.innerHeight
-        const pct = scrollable > 0 ? window.scrollY / scrollable : 0
-        setProgress(Math.min(1, Math.max(0, pct)))
-        ticking = false
-      })
-    }
+        // Only update progress on scroll, let IntersectionObserver handle active section
+        const doc = document.documentElement;
+        const scrollable = doc.scrollHeight - window.innerHeight;
+        const pct = scrollable > 0 ? window.scrollY / scrollable : 0;
+        setProgress(Math.min(1, Math.max(0, pct)));
+        ticking = false;
+      });
+    };
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)
     onScroll()
