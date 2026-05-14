@@ -4,6 +4,10 @@ import { SIGN_IN_PAGE_URL } from "../lib/appConfig";
 import { Globe } from "../components/ui/globe";
 import { StickyFeatures } from "../features/landing/components/StickyFeatures";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
+import gsap from "gsap";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+
+gsap.registerPlugin(ScrollToPlugin);
 
 const CALENDLY_URL = "https://calendly.com/patra-ritvik/30min";
 
@@ -104,13 +108,23 @@ const NAV_LINKS = [
 ];
 
 function scrollToSection(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const element = document.getElementById(id);
+  if (!element) return;
+
+  gsap.to(window, {
+    duration: 1.25,
+    scrollTo: {
+      y: element,
+      offsetY: 80,
+    },
+    ease: "expo.inOut",
+  });
 }
 
 function TopNav({ onBookDemo }: { onBookDemo: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isNavVisible, setIsNavVisible] = useState(true);
-  const [isTopEdgeHovering, setIsTopEdgeHovering] = useState(false);
+  const [isNavHovered, setIsNavHovered] = useState(false);
   const [navHeight, setNavHeight] = useState(82);
   const navRef = useRef<HTMLDivElement>(null);
   const lastScrollYRef = useRef(0);
@@ -141,32 +155,23 @@ function TopNav({ onBookDemo }: { onBookDemo: () => void }) {
       return;
     }
 
-    if (currentY <= 24) {
+    // Always show at the very top of the page
+    if (currentY <= 40) {
       setIsNavVisible(true);
-    } else if (currentY > 180 && deltaY > 6) {
+    } 
+    // Hide when scrolling down significantly
+    else if (deltaY > 5) {
       setIsNavVisible(false);
-    } else if (deltaY < -3) {
+    } 
+    // Show when scrolling up significantly
+    else if (deltaY < -4) {
       setIsNavVisible(true);
     }
 
     lastScrollYRef.current = currentY;
   });
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const onMouseMove = (event: MouseEvent) => {
-      setIsTopEdgeHovering(event.clientY <= 28);
-    };
-
-    window.addEventListener("mousemove", onMouseMove, { passive: true });
-    return () => {
-      window.removeEventListener("mousemove", onMouseMove);
-      setIsTopEdgeHovering(false);
-    };
-  }, []);
-
-  const shouldShowNav = menuOpen || isNavVisible || isTopEdgeHovering;
+  const shouldShowNav = menuOpen || isNavVisible || isNavHovered;
 
   return (
     <div className="nav-row-slot" style={{ height: `${navHeight}px` }}>
@@ -174,6 +179,8 @@ function TopNav({ onBookDemo }: { onBookDemo: () => void }) {
         <motion.div
           ref={navRef}
           className={`nav-row${menuOpen ? " nav-row--open" : ""}${!shouldShowNav ? " nav-row--hidden" : ""}`}
+          onMouseEnter={() => setIsNavHovered(true)}
+          onMouseLeave={() => setIsNavHovered(false)}
           initial={false}
           animate={shouldShowNav ? "visible" : "hidden"}
           variants={{
@@ -968,6 +975,24 @@ function Footer() {
 export function LandingPage() {
   const openDemo = useCallback(() => {
     window.open(CALENDLY_URL, "_blank", "noopener,noreferrer");
+  }, []);
+
+  // Global Reveal Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-revealed");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    );
+
+    document.querySelectorAll(".lp-reveal").forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
   }, []);
 
   return (
