@@ -294,8 +294,7 @@ export function StickyFeatures() {
 
     const st = ScrollTrigger.create({
       trigger: header,
-      /* fire once the sticky-features heading reaches roughly two-thirds down the viewport */
-      start: "top 66%",
+      start: "top 33%",
       onEnter: goPlum,
       onLeaveBack: goWhite,
     });
