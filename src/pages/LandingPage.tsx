@@ -1062,9 +1062,14 @@ export function LandingPage() {
 
           <div id="section-how-it-works">
             <SectionTag label="What we are" />
-            <p className="lp-section-bridge">
-              so we built one AI agent that answers all of those questions.
-            </p>
+            <div className="lp-section-bridge-block">
+              <p className="lp-section-bridge">
+                So we built one AI agent that answers all of those questions.
+              </p>
+              <p className="lp-section-bridge-sub">
+                Wire in your indoor map, flight telemetry, and gate data. Pick a voice. Deploy a phone number. That's it.
+              </p>
+            </div>
             <FeaturesGrid />
             <MemorySection />
             <StickyFeatures />
