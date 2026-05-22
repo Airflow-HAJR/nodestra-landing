@@ -741,14 +741,6 @@ const BENTO_CARDS: BentoCard[] = [
     area: "ads",
   },
   {
-    id: "memory",
-    t: "Remembers every passenger.",
-    d: "Cross-call and cross-airport memory retains preferences, accessibility needs, and frequent routes — so returning travelers are greeted like regulars, not strangers.",
-    img: "isometric · returning traveler profile + history thread",
-    tone: "dark",
-    area: "memory",
-  },
-  {
     id: "a11y",
     t: "Built for every body.",
     d: "Personalized settings, SMS fallback, screen-reader-first design, signed-language video, step-free routing. Disabled travelers get the airport built around them.",
@@ -759,64 +751,51 @@ const BENTO_CARDS: BentoCard[] = [
 ];
 
 const MEMORY_PASSENGERS = [
-  { initials: "MR", airport: "LHR → JFK", note: "Wheelchair, aisle seat" },
-  { initials: "YT", airport: "NRT → SFO", note: "Japanese, gate B alerts" },
-  { initials: "AK", airport: "DXB → CDG", note: "Halal meals, lounge" },
-  { initials: "SL", airport: "ORD → MIA", note: "Frequent flier, TSA Pre✓" },
+  { initials: "MR", airport: "LHR → JFK", note: "Wheelchair access · aisle seat · no peanuts", visits: 14 },
+  { initials: "YT", airport: "NRT → SFO", note: "Japanese · gate B alerts · lounge access", visits: 7 },
+  { initials: "AK", airport: "DXB → CDG", note: "Halal meals · priority boarding · lounge", visits: 22 },
+  { initials: "SL", airport: "ORD → MIA", note: "Frequent flier · TSA Pre✓ · window seat", visits: 31 },
+  { initials: "FO", airport: "CDG → SIN", note: "French · step-free routing · extra time", visits: 3 },
+  { initials: "BW", airport: "JFK → LHR", note: "Business class · express lane · vegan", visits: 18 },
 ];
 
-function MemoryVisual() {
+function MemorySection() {
   return (
-    <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 7 }}>
-      {MEMORY_PASSENGERS.map((p, i) => (
-        <div
-          key={p.initials}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            background: "rgba(255,255,255,0.08)",
-            border: "1px solid rgba(255,255,255,0.13)",
-            borderRadius: 10,
-            padding: "7px 10px",
-            opacity: 1 - i * 0.12,
-          }}
-        >
-          <div
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: "50%",
-              background: "rgba(255,255,255,0.18)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "var(--ui)",
-              fontSize: 10,
-              fontWeight: 600,
-              color: "rgba(255,255,255,0.9)",
-              flexShrink: 0,
-              letterSpacing: "0.03em",
-            }}
-          >
-            {p.initials}
-          </div>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontFamily: "var(--ui)", fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.55)", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-              {p.airport}
+    <div className="lp-memory-section">
+      <div className="lp-memory-inner">
+        <div className="lp-memory-left">
+          <p className="lp-memory-eyebrow">Passenger memory</p>
+          <h2 className="lp-memory-heading">Remembers every passenger.</h2>
+          <p className="lp-memory-body">
+            Cross-call and cross-airport memory retains preferences, accessibility needs, and frequent routes. Returning travelers are greeted like regulars — no matter which airport they land in.
+          </p>
+          <div className="lp-memory-stats">
+            <div className="lp-memory-stat">
+              <span className="lp-memory-stat-value">∞</span>
+              <span className="lp-memory-stat-label">airports remembered across</span>
             </div>
-            <div style={{ fontFamily: "var(--ui)", fontSize: 11, color: "rgba(255,255,255,0.82)", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-              {p.note}
+            <div className="lp-memory-stat">
+              <span className="lp-memory-stat-value">0</span>
+              <span className="lp-memory-stat-label">times a passenger repeats themselves</span>
             </div>
-          </div>
-          <div style={{ marginLeft: "auto", flexShrink: 0 }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <circle cx="7" cy="7" r="6" stroke="rgba(255,255,255,0.25)" strokeWidth="1"/>
-              <circle cx="7" cy="7" r="3" fill="rgba(255,255,255,0.35)"/>
-            </svg>
           </div>
         </div>
-      ))}
+        <div className="lp-memory-right">
+          {MEMORY_PASSENGERS.map((p, i) => (
+            <div key={p.initials} className="lp-memory-row" style={{ animationDelay: `${i * 80}ms` }}>
+              <div className="lp-memory-avatar">{p.initials}</div>
+              <div className="lp-memory-row-info">
+                <span className="lp-memory-route">{p.airport}</span>
+                <span className="lp-memory-note">{p.note}</span>
+              </div>
+              <div className="lp-memory-visits">
+                <span className="lp-memory-visits-count">{p.visits}×</span>
+                <span className="lp-memory-visits-label">visits</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -904,8 +883,6 @@ function FeaturesGrid() {
                       speed={0.004}
                     />
                   </div>
-                : c.id === "memory"
-                  ? <MemoryVisual />
                 : c.imgSrc
                   ? <img src={c.imgSrc} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                   : c.img}
@@ -1086,6 +1063,7 @@ export function LandingPage() {
           <div id="section-how-it-works">
             <SectionTag label="Capabilities" />
             <FeaturesGrid />
+            <MemorySection />
             <StickyFeatures />
           </div>
 

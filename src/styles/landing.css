@@ -572,7 +572,7 @@
   transform: translateY(0);
 }
 
-/* bento grid — 6 benefit cards */
+/* bento grid — 5 benefit cards */
 .lp .bento-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -580,7 +580,7 @@
   grid-template-areas:
     "phone phone phone phone phone phone phone lang lang lang lang lang"
     "phone phone phone phone phone phone phone analytics analytics analytics analytics analytics"
-    "ads ads ads ads memory memory memory memory a11y a11y a11y a11y";
+    "ads ads ads ads ads a11y a11y a11y a11y a11y a11y a11y";
   gap: 18px;
 }
 
@@ -648,17 +648,6 @@
   margin-top: 0;
   margin-bottom: 0;
 }
-.lp .area-memory { grid-area: memory; }
-.lp .area-memory .bento-img {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  background: none;
-  border: none;
-  padding: 8px 0 0;
-}
 .lp .area-a11y { grid-area: a11y; }
 
 
@@ -671,7 +660,6 @@
       "lang"
       "analytics"
       "ads"
-      "memory"
       "a11y";
   }
   .lp .bento-card {
@@ -1050,6 +1038,220 @@
   }
   .lp .mega {
     font-size: 44px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MEMORY SECTION — Full-bleed dark panel, passenger memory
+   ═══════════════════════════════════════════════════════════════ */
+
+.lp .lp-memory-section {
+  /* full-bleed breakout from .sheet / .sections-grid */
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, var(--text-dark) 88%, var(--blue-core)) 0%,
+    var(--text-dark) 55%,
+    var(--c-ink) 100%
+  );
+  overflow: hidden;
+}
+
+.lp .lp-memory-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 20% 50%, rgba(110,61,95,0.22), transparent 65%),
+              radial-gradient(ellipse 40% 40% at 80% 80%, rgba(74,82,120,0.15), transparent 60%);
+  pointer-events: none;
+}
+
+.lp .lp-memory-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1210px;
+  margin: 0 auto;
+  padding: clamp(3rem, 6vw, 5rem) 28px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
+}
+
+.lp .lp-memory-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.lp .lp-memory-eyebrow {
+  font-family: "Clash Grotesk", system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  margin: 0;
+}
+
+.lp .lp-memory-heading {
+  font-family: "PP Neue York", serif;
+  font-size: clamp(2.4rem, 4.5vw, 4rem);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0;
+  max-width: 12ch;
+}
+
+.lp .lp-memory-body {
+  font-family: "Clash Grotesk", system-ui, sans-serif;
+  font-size: clamp(0.9rem, 1.1vw, 1rem);
+  line-height: 1.6;
+  color: rgba(255,255,255,0.6);
+  margin: 0;
+  max-width: 38ch;
+}
+
+.lp .lp-memory-stats {
+  display: flex;
+  gap: 2rem;
+  margin-top: 0.5rem;
+}
+
+.lp .lp-memory-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.lp .lp-memory-stat-value {
+  font-family: "PP Neue York", serif;
+  font-size: 2rem;
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.lp .lp-memory-stat-label {
+  font-family: "Clash Grotesk", system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  max-width: 14ch;
+  line-height: 1.35;
+}
+
+.lp .lp-memory-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lp .lp-memory-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 10px 14px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.lp .lp-memory-row:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.18);
+}
+
+.lp .lp-memory-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Clash Grotesk", system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.lp .lp-memory-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.lp .lp-memory-route {
+  font-family: "Clash Grotesk", system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.lp .lp-memory-note {
+  font-family: "Clash Grotesk", system-ui, sans-serif;
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lp .lp-memory-visits {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+.lp .lp-memory-visits-count {
+  font-family: "PP Neue York", serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.7);
+}
+
+.lp .lp-memory-visits-label {
+  font-family: "Clash Grotesk", system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 900px) {
+  .lp .lp-memory-inner {
+    grid-template-columns: 1fr;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .lp .lp-memory-heading {
+    max-width: none;
+  }
+
+  .lp .lp-memory-body {
+    max-width: none;
   }
 }
 
