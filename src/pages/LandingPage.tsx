@@ -597,14 +597,6 @@ function ProblemFraming() {
       </div>
 
       <div className="stack" style={{ marginTop: 28, gap: 14 }}>
-        <div className="row" style={{ gap: 10 }}>
-          <span className="pill tint" style={{ fontFamily: "Inter" }}>
-            IMPACT
-          </span>
-          <span className="scribble" style={{ color: "var(--text-mid)" }}>
-            source: ACI passenger experience benchmark · 2024–25
-          </span>
-        </div>
         <div className="grid g12" style={{ gap: 14, alignItems: "stretch" }}>
           <div className="col-span-4 box tint" style={{ padding: 22 }}>
             <span className="lbl">avg. passenger satisfaction</span>
