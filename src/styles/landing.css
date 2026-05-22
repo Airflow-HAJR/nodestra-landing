@@ -154,9 +154,9 @@
 }
 
 .lp .sheet {
-  max-width: 1180px;
+  max-width: 1210px;
   margin: 0 auto;
-  padding: 32px max(43px, 5vw) 120px;
+  padding: 32px 28px 120px;
   position: relative;
   z-index: 1;
 }
@@ -409,6 +409,11 @@
 
   .lp .nav-hamburger {
     display: flex;
+  }
+
+  .lp .sheet {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
 
