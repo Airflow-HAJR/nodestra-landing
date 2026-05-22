@@ -572,7 +572,7 @@
   transform: translateY(0);
 }
 
-/* bento grid — 5 benefit cards */
+/* bento grid — 6 benefit cards */
 .lp .bento-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -580,7 +580,7 @@
   grid-template-areas:
     "phone phone phone phone phone phone phone lang lang lang lang lang"
     "phone phone phone phone phone phone phone analytics analytics analytics analytics analytics"
-    "ads ads ads ads ads a11y a11y a11y a11y a11y a11y a11y";
+    "ads ads ads ads memory memory memory memory a11y a11y a11y a11y";
   gap: 18px;
 }
 
@@ -648,6 +648,17 @@
   margin-top: 0;
   margin-bottom: 0;
 }
+.lp .area-memory { grid-area: memory; }
+.lp .area-memory .bento-img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: none;
+  border: none;
+  padding: 8px 0 0;
+}
 .lp .area-a11y { grid-area: a11y; }
 
 
@@ -660,6 +671,7 @@
       "lang"
       "analytics"
       "ads"
+      "memory"
       "a11y";
   }
   .lp .bento-card {
