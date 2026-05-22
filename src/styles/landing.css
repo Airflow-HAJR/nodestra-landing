@@ -607,7 +607,7 @@
 .lp .bento-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: 320px 200px auto;
+  grid-template-rows: 240px 280px auto;
   grid-template-areas:
     "phone phone phone phone phone phone phone lang lang lang lang lang"
     "phone phone phone phone phone phone phone analytics analytics analytics analytics analytics"
