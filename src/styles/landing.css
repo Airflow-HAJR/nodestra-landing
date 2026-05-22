@@ -526,6 +526,18 @@
   display: none;
 }
 
+/* Bridge statement between sections */
+.lp .lp-section-bridge {
+  font-family: "PP Neue York", serif;
+  font-weight: 500;
+  font-size: clamp(1.75rem, 3.5vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text-dark);
+  margin: 0 0 clamp(2rem, 4vw, 3.5rem);
+  max-width: 22ch;
+}
+
 .lp .underline-hand {
   background-image: linear-gradient(transparent 90%, var(--accent) 90%);
   background-size: 100% 100%;

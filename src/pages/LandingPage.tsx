@@ -1061,7 +1061,10 @@ export function LandingPage() {
           </div>
 
           <div id="section-how-it-works">
-            <SectionTag label="Capabilities" />
+            <SectionTag label="What we are" />
+            <p className="lp-section-bridge">
+              so we built one AI agent that answers all of those questions.
+            </p>
             <FeaturesGrid />
             <MemorySection />
             <StickyFeatures />
