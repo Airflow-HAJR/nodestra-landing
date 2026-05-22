@@ -672,6 +672,10 @@
 
 .lp .area-phone { grid-area: phone; }
 .lp .area-lang { grid-area: lang; }
+.lp .area-lang .bento-img {
+  margin-top: 16px;
+  padding-bottom: 22px;
+}
 .lp .area-analytics { grid-area: analytics; }
 .lp .area-ads { grid-area: ads; }
 .lp .area-ads .bento-img {
