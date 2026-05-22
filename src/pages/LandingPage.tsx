@@ -864,7 +864,7 @@ function FeaturesGrid() {
               }}
             >
               {c.id === "lang"
-                ? <div style={{ width: 220, height: 220, margin: "0 auto" }}>
+                ? <div style={{ width: 160, height: 160, margin: "0 auto" }}>
                     <Globe
                       markers={GLOBE_MARKERS}
                       baseColor={[0.82, 0.82, 0.82]}
