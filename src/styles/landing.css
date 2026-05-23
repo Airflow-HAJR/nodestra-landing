@@ -161,6 +161,26 @@
   z-index: 1;
 }
 
+/* Hero orb box — open grid cell with full-width horizontal rules */
+.lp .lp-hero-orb {
+  position: relative;
+}
+
+.lp .lp-hero-orb::before,
+.lp .lp-hero-orb::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 1px;
+  background: var(--border);
+  pointer-events: none;
+  z-index: 2;
+}
+.lp .lp-hero-orb::before { top: 0; }
+.lp .lp-hero-orb::after  { bottom: 0; }
+
 /* Vertical grid lines — span full sheet height including hero */
 .lp .sections-grid {
   position: relative;
@@ -613,7 +633,6 @@
 
 /* bento grid — 5 benefit cards */
 .lp .bento-grid {
-  position: relative;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   grid-template-rows: 260px 260px auto;
@@ -623,21 +642,6 @@
     "ads ads ads ads ads a11y a11y a11y a11y a11y a11y a11y";
   gap: 18px;
 }
-
-/* Full-width horizontal rules at top and bottom of the bento grid */
-.lp .bento-grid::before,
-.lp .bento-grid::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
-  height: 1px;
-  background: var(--border);
-  pointer-events: none;
-}
-.lp .bento-grid::before { top: -9px; }
-.lp .bento-grid::after  { bottom: -9px; }
 
 .lp .bento-card {
   border-radius: 10px;
