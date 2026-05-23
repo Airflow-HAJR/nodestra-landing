@@ -161,13 +161,13 @@
   z-index: 1;
 }
 
-/* Vertical grid lines — only in the sections below the hero */
+/* Vertical grid lines — span full sheet height including hero */
 .lp .sections-grid {
   position: relative;
 }
 
-.lp .sections-grid::before,
-.lp .sections-grid::after {
+.lp .sheet::before,
+.lp .sheet::after {
   content: '';
   position: absolute;
   top: 0;
@@ -176,9 +176,10 @@
   background: var(--border);
   pointer-events: none;
   transition: opacity 0.55s ease;
+  z-index: 0;
 }
-.lp .sections-grid::before { left: -20px; }
-.lp .sections-grid::after  { right: -20px; }
+.lp .sheet::before { left: 8px; }
+.lp .sheet::after  { right: 8px; }
 
 .lp .lbl {
   font-family: var(--ui);
@@ -540,12 +541,12 @@
   align-items: center;
   text-align: center;
   gap: 1.1rem;
-  padding: clamp(2.5rem, 5vw, 4.5rem) 0 clamp(2rem, 4vw, 3.5rem);
+  padding: clamp(2rem, 4vw, 3.5rem) 0;
 }
 
 .lp .lp-section-bridge {
-  font-family: "PP Neue York", serif;
-  font-weight: 500;
+  font-family: "Clash Grotesk", system-ui, sans-serif;
+  font-weight: 700;
   font-size: clamp(1.75rem, 3.5vw, 3rem);
   line-height: 1.1;
   letter-spacing: -0.02em;
@@ -612,6 +613,7 @@
 
 /* bento grid — 5 benefit cards */
 .lp .bento-grid {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   grid-template-rows: 260px 260px auto;
@@ -621,6 +623,21 @@
     "ads ads ads ads ads a11y a11y a11y a11y a11y a11y a11y";
   gap: 18px;
 }
+
+/* Full-width horizontal rules at top and bottom of the bento grid */
+.lp .bento-grid::before,
+.lp .bento-grid::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 1px;
+  background: var(--border);
+  pointer-events: none;
+}
+.lp .bento-grid::before { top: -9px; }
+.lp .bento-grid::after  { bottom: -9px; }
 
 .lp .bento-card {
   border-radius: 10px;
@@ -1819,8 +1836,8 @@
 .lp-sf-section.is-plum .lp-sf-audio-btn--error  { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.35); }
 .lp-sf-section.is-plum .lp-sf-spinner { border-color: rgba(255,255,255,0.2); border-top-color: rgba(255,255,255,0.8); }
 
-.lp.is-plum-story .sections-grid::before,
-.lp.is-plum-story .sections-grid::after {
+.lp.is-plum-story .sheet::before,
+.lp.is-plum-story .sheet::after {
   opacity: 0;
 }
 
