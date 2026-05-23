@@ -357,11 +357,12 @@ function OrbDemo({ tall = false }: { tall?: boolean }) {
 
   return (
     <div
-      className="lp-hero-orb"
       style={{
         position: "relative",
+        borderRadius: 10,
         padding: "36px 28px 18px",
         background: "linear-gradient(180deg, #ffffff 0%, #F6F6F6 100%)",
+        border: "1px solid var(--border)",
         overflow: "hidden",
         minHeight: tall ? 500 : 460,
       }}

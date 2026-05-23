@@ -161,33 +161,13 @@
   z-index: 1;
 }
 
-/* Hero orb box — open grid cell with full-width horizontal rules */
-.lp .lp-hero-orb {
-  position: relative;
-}
-
-.lp .lp-hero-orb::before,
-.lp .lp-hero-orb::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
-  height: 1px;
-  background: var(--border);
-  pointer-events: none;
-  z-index: 2;
-}
-.lp .lp-hero-orb::before { top: 0; }
-.lp .lp-hero-orb::after  { bottom: 0; }
-
-/* Vertical grid lines — span full sheet height including hero */
+/* Vertical grid lines — only in sections below the hero */
 .lp .sections-grid {
   position: relative;
 }
 
-.lp .sheet::before,
-.lp .sheet::after {
+.lp .sections-grid::before,
+.lp .sections-grid::after {
   content: '';
   position: absolute;
   top: 0;
@@ -195,11 +175,28 @@
   width: 1px;
   background: var(--border);
   pointer-events: none;
-  transition: opacity 0.55s ease;
-  z-index: 0;
+  transition: background-color 0.3s ease, opacity 0.55s ease;
 }
-.lp .sheet::before { left: 8px; }
-.lp .sheet::after  { right: 8px; }
+.lp .sections-grid::before { left: -20px; }
+.lp .sections-grid::after  { right: -20px; }
+
+.lp .sections-grid:hover::before,
+.lp .sections-grid:hover::after {
+  background: var(--blush);
+}
+
+/* "Why it matters" — no lines, white background covers side lines */
+#section-customers {
+  background: var(--paper);
+  margin-left: -28px;
+  margin-right: -28px;
+  padding-left: 28px;
+  padding-right: 28px;
+}
+
+#section-customers .section-tag::before {
+  display: none;
+}
 
 .lp .lbl {
   font-family: var(--ui);
@@ -533,7 +530,11 @@
   height: 1px;
   background: var(--border);
   z-index: 0;
-  transition: background-color 0.55s ease, opacity 0.55s ease;
+  transition: background-color 0.3s ease, opacity 0.55s ease;
+}
+
+.lp .section-tag:hover::before {
+  background: var(--blush);
 }
 
 .lp .section-tag .t {
@@ -1840,8 +1841,8 @@
 .lp-sf-section.is-plum .lp-sf-audio-btn--error  { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.35); }
 .lp-sf-section.is-plum .lp-sf-spinner { border-color: rgba(255,255,255,0.2); border-top-color: rgba(255,255,255,0.8); }
 
-.lp.is-plum-story .sheet::before,
-.lp.is-plum-story .sheet::after {
+.lp.is-plum-story .sections-grid::before,
+.lp.is-plum-story .sections-grid::after {
   opacity: 0;
 }
 
