@@ -50,7 +50,7 @@
   position: fixed;
   inset: 0;
   z-index: 0;
-  background: #FAFAFA;
+  background: #ffffff;
   pointer-events: none;
   will-change: background-color;
   transition: background-color 0.55s cubic-bezier(0.4, 0, 0.2, 1);

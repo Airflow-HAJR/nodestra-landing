@@ -361,7 +361,7 @@ function OrbDemo({ tall = false }: { tall?: boolean }) {
         position: "relative",
         borderRadius: 10,
         padding: "36px 28px 18px",
-        background: "linear-gradient(180deg, #ffffff 0%, #F6F6F6 100%)",
+        background: "#ffffff",
         border: "1px solid var(--border)",
         overflow: "hidden",
         minHeight: tall ? 500 : 460,
@@ -801,7 +801,7 @@ function toneStyle(tone: BentoTone): React.CSSProperties {
     };
   if (tone === "tint")
     return {
-      background: "linear-gradient(160deg, #ffffff 0%, #F7F7F7 100%)",
+      background: "#ffffff",
       color: "var(--text-dark)",
     };
   if (tone === "dark")
