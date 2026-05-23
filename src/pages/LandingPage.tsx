@@ -359,7 +359,7 @@ function OrbDemo({ tall = false }: { tall?: boolean }) {
     <div
       style={{
         position: "relative",
-        borderRadius: 18,
+        borderRadius: 10,
         padding: "36px 28px 18px",
         background: "linear-gradient(180deg, #ffffff 0%, #F6F6F6 100%)",
         border: "1.5px solid var(--border)",

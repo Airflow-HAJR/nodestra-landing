@@ -104,7 +104,7 @@
   align-items: center;
   font-size: 24px;
   gap: 0.18em;
-  color: var(--plum);
+  color: var(--text-dark);
   text-decoration: none;
   line-height: 1;
 }
@@ -122,7 +122,7 @@
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 0.92;
-  color: var(--plum);
+  color: var(--text-dark);
   text-transform: lowercase;
 }
 
@@ -198,7 +198,7 @@
 
 .lp .box {
   border: 1.5px solid var(--border);
-  border-radius: 14px;
+  border-radius: 8px;
   background: var(--paper);
   padding: 18px;
 }
@@ -269,7 +269,7 @@
   align-items: center;
   padding: 12px 20px;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 14px;
+  border-radius: 8px;
   background: #fff;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06);
   width: min(1210px, calc(100vw - 56px));
@@ -357,7 +357,7 @@
   right: 0;
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 6px 0 12px;
   z-index: 100;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
@@ -396,7 +396,7 @@
   .lp .nav-row {
     flex-wrap: wrap;
     width: calc(100vw - 24px);
-    border-radius: 12px;
+    border-radius: 8px;
   }
 
   .lp .nav-row .links {
@@ -623,7 +623,7 @@
 }
 
 .lp .bento-card {
-  border-radius: 18px;
+  border-radius: 10px;
   padding: 22px;
   display: flex;
   flex-direction: column;
@@ -644,7 +644,7 @@
   inset: 0;
   pointer-events: none;
   background: radial-gradient(120% 60% at 0% 0%, rgba(255, 255, 255, 0.35), transparent 60%);
-  border-radius: 18px;
+  border-radius: 10px;
 }
 
 .lp .bento-card > * {
@@ -663,7 +663,7 @@
 
 .lp .bento-card .bento-img {
   margin-top: auto;
-  border-radius: 10px;
+  border-radius: 6px;
   flex: 1;
   min-height: 80px;
   display: flex;
@@ -1204,7 +1204,7 @@
   gap: 12px;
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
+  border-radius: 6px;
   padding: 10px 14px;
   transition: background 0.2s ease, border-color 0.2s ease;
 }
