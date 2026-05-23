@@ -361,7 +361,7 @@ function OrbDemo({ tall = false }: { tall?: boolean }) {
         position: "relative",
         borderRadius: 18,
         padding: "36px 28px 18px",
-        background: "linear-gradient(180deg,var(--white) 0%,#F5F2F6 100%)",
+        background: "linear-gradient(180deg, #ffffff 0%, #F6F6F6 100%)",
         border: "1.5px solid var(--border)",
         overflow: "hidden",
         minHeight: tall ? 500 : 460,
@@ -801,7 +801,7 @@ function toneStyle(tone: BentoTone): React.CSSProperties {
     };
   if (tone === "tint")
     return {
-      background: "linear-gradient(160deg,var(--white) 0%,var(--tint) 55%,var(--chip-bg) 100%)",
+      background: "linear-gradient(160deg, #ffffff 0%, #F7F7F7 100%)",
       color: "var(--text-dark)",
     };
   if (tone === "dark")
@@ -811,7 +811,7 @@ function toneStyle(tone: BentoTone): React.CSSProperties {
       color: "var(--white)",
     };
   return {
-    background: "linear-gradient(160deg,var(--white) 0%,var(--tint) 60%,var(--chip-bg) 100%)",
+    background: "linear-gradient(160deg, #ffffff 0%, #F7F7F7 100%)",
     color: "var(--text-dark)",
   };
 }
