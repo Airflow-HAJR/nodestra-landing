@@ -17,10 +17,10 @@ export const CHAPTERS: LandingChapter[] = [
   {
     id: "voice",
     eyebrow: "Chapter 1",
-    title: "It answers any phone.",
+    title: "Passenger-facing Voice Intelligence",
     caption:
       "A dial tone. A voice. Turn-by-turn directions in the passenger's language.",
-    copy: "Passengers do not need to learn your airport. They ask in plain language, and Nodestra responds with spoken, step-by-step directions that update mid-walk when the terminal changes.",
+    copy: "Powered by the state-of-the-art in voice AI, your passengers meet a warm voice that speaks their language, and gives them intelligent guidance for all of their queries.",
     command: '"I just landed. How do I get to baggage claim?"',
     response:
       "Nodestra understands the ask, identifies the passenger context, and starts speaking the route back in seconds.",
@@ -69,18 +69,18 @@ export const CHAPTERS: LandingChapter[] = [
   {
     id: "live-intel",
     eyebrow: "Chapter 2",
-    title: "It hears the terminal.",
+    title: "Integrations",
     caption:
       "A live pulse of every gate, every flight, every queue — updated in seconds.",
-    copy: "Behind the voice is a live operating picture. Nodestra watches the terminal the way a tower watches the airspace, so every spoken answer reflects what is true in real time.",
+    copy: "Toggle which capabilities should be fed live to the Nodestra agent. Indoor mapping, flight tracking, ad-based promotions, etc. Simply connect your existing softwares into the agent, or use our proprietary ones. ",
     command: '"What changed in Terminal C?"',
     response:
       "Live feeds, passenger density, and desk-level alerts are fused into one voice-ready state model.",
     stats: [
-      { label: "Feed latency", value: "1.8s", delta: "p95 end-to-end" },
+      { label: "Feed latency", value: "< 14ms", delta: "p95 end-to-end" },
       {
         label: "Update cadence",
-        value: "4s",
+        value: "30s",
         delta: "fresh flight board state",
       },
       { label: "Coverage", value: "100%", delta: "gates, queues, checkpoints" },
@@ -116,26 +116,26 @@ export const CHAPTERS: LandingChapter[] = [
   {
     id: "gate-recovery",
     eyebrow: "Chapter 3",
-    title: "It adapts in seconds.",
+    title: "Airport-facing Dashboard",
     caption:
       "Gate moves from C04 to E17 — 212 passengers already walking the new route.",
-    copy: "A disruption is not just a red badge on a screen. Nodestra detects the change, recalculates the route, and updates the spoken guidance before passengers reach the wrong concourse.",
+    copy: "See analytics—call logs, confusing POIs, common languages, revenue, and more—all in one dashboard. Update the agent's voice, integrations, and settings on the same dashboard. And our team is available 24/7 to help.",
     command: '"Flight BA287 moved. Who is affected?"',
     response:
       "Nodestra isolates impacted passengers, computes the new path, and pushes the new voice flow automatically.",
     stats: [
       {
-        label: "Detect → dispatch",
-        value: "3.4s",
+        label: "Metrics ",
+        value: "23+",
         delta: "gate move to passenger update",
       },
       {
-        label: "Passengers rerouted",
-        value: "212",
+        label: "Dashboard uptime",
+        value: "99.99%",
         delta: "on a single flight event",
       },
       {
-        label: "Missed handoffs",
+        label: "Missed insights",
         value: "0",
         delta: "when the voice loop stays active",
       },

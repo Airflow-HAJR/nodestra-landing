@@ -270,8 +270,10 @@ function TopNav({ onBookDemo }: { onBookDemo: () => void }) {
 function SectionTag({ label }: { label: string }) {
   return (
     <div className="section-tag">
+      <span className="section-tag-cross section-tag-cross--left" aria-hidden="true" />
       <span className="t">{label}</span>
       <span className="rule" />
+      <span className="section-tag-cross section-tag-cross--right" aria-hidden="true" />
     </div>
   );
 }
@@ -796,8 +798,8 @@ function toneStyle(tone: BentoTone): React.CSSProperties {
   if (tone === "accent")
     return {
       background:
-        "linear-gradient(155deg,var(--accent) 0%, color-mix(in srgb, var(--accent) 82%, var(--white)) 48%, color-mix(in srgb, var(--accent) 64%, var(--white)) 100%)",
-      color: "var(--white)",
+        "linear-gradient(155deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 72%, #ffffff) 55%, color-mix(in srgb, var(--accent) 50%, #ffffff) 100%)",
+      color: "var(--text-dark)",
     };
   if (tone === "tint")
     return {
@@ -816,10 +818,67 @@ function toneStyle(tone: BentoTone): React.CSSProperties {
   };
 }
 
+function AnalyticsBentoCard({ card }: { card: typeof BENTO_CARDS[number] }) {
+  return (
+    <div
+      className="bento-card area-analytics"
+      style={toneStyle(card.tone)}
+    >
+      <h3 style={{ fontFamily: "var(--display)", fontSize: 32, lineHeight: 1.05, letterSpacing: "-0.01em", margin: "0 0 12px", color: "var(--white)" }}>
+        {card.t}
+      </h3>
+      <p style={{ fontFamily: "var(--ui)", fontSize: 13, lineHeight: 1.55, margin: 0, maxWidth: "42ch", color: "rgba(250,250,249,.9)" }}>
+        {card.d}
+      </p>
+      <div className="bento-img bento-video-wrap">
+        <video
+          className="bento-video"
+          src="/assets/analytics-hover.webm"
+          autoPlay
+          muted
+          playsInline
+          loop
+          preload="metadata"
+        />
+      </div>
+    </div>
+  );
+}
+
+function AdsBentoCard({ card }: { card: typeof BENTO_CARDS[number] }) {
+  return (
+    <div
+      className="bento-card area-ads"
+      style={toneStyle(card.tone)}
+    >
+      <h3 style={{ fontFamily: "var(--display)", fontSize: 32, lineHeight: 1.05, letterSpacing: "-0.01em", margin: "0 0 12px", color: "var(--text-dark)" }}>
+        {card.t}
+      </h3>
+      <p style={{ fontFamily: "var(--ui)", fontSize: 13, lineHeight: 1.55, margin: 0, maxWidth: "42ch", color: "var(--text-mid)" }}>
+        {card.d}
+      </p>
+      <div className="bento-img bento-video-wrap">
+        <video
+          className="bento-video"
+          src="/assets/ad-revenue-hover.webm"
+          autoPlay
+          muted
+          playsInline
+          loop
+          preload="metadata"
+        />
+      </div>
+    </div>
+  );
+}
+
 function FeaturesGrid() {
   return (
     <div className="bento-grid">
       {BENTO_CARDS.map((c) => {
+        if (c.id === "analytics") return <AnalyticsBentoCard key={c.id} card={c} />;
+        if (c.id === "ads") return <AdsBentoCard key={c.id} card={c} />;
+
         const dark = c.tone === "accent" || c.tone === "dark";
         return (
           <div
@@ -1041,8 +1100,9 @@ export function LandingPage() {
     <div className="lp">
       <div id="lp-bg-overlay" aria-hidden="true" />
       <div className="sheet">
+        <div className="lp-ambient" aria-hidden="true" />
         <TopNav onBookDemo={openDemo} />
-        <div id="section-product">
+        <div id="section-product" className="lp-hero-wrapper">
           <HeroDemo onBookDemo={openDemo} />
         </div>
 
@@ -1063,13 +1123,16 @@ export function LandingPage() {
               </p>
             </div>
             <FeaturesGrid />
-            <MemorySection />
             <StickyFeatures />
           </div>
 
           <div id="section-integrations">
             <SectionTag label="Integrations" />
             <IntegrationsGrid />
+          </div>
+
+          <div id="section-memory">
+            <MemorySection />
           </div>
 
           <div id="section-pricing">
