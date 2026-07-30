@@ -2114,3 +2114,811 @@
     padding-top: 1.5rem;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   MAIN-PRESERVING REFINEMENTS
+   Keeps the original page composition while removing the expensive
+   full-page paint paths and the carousel treatment.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --page-offwhite: #F7F7F4;
+  --page-surface: #FCFCFA;
+  --paper: var(--page-offwhite);
+  --tint: #EFEFEB;
+  --chip-bg: #E9E9E5;
+  --border: #D9D9D3;
+  --hand: "Geist Variable", system-ui, sans-serif;
+  --display: "PP Neue York", Georgia, serif;
+  --ui: "Geist Variable", system-ui, sans-serif;
+}
+
+body,
+.lp {
+  background: var(--page-offwhite);
+}
+
+.lp .nav-row,
+.lp .nav-mobile-menu {
+  background: var(--page-surface);
+}
+
+.lp .nav-row-fixed-shell {
+  z-index: 1000;
+  isolation: isolate;
+}
+
+.lp .nav-row {
+  will-change: auto;
+  transition: transform 0.22s ease, opacity 0.18s ease;
+}
+
+.lp .nav-row.nav-row--hidden {
+  opacity: 0;
+  transform: translateY(calc(-100% - 20px));
+}
+
+.lp-reveal.is-revealed {
+  will-change: auto;
+}
+
+/* ── Voice orb: one object, five clear choices, zero idle animation ───────── */
+
+.lp .voice-orb-demo {
+  min-height: 460px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--page-surface);
+}
+
+.lp .voice-orb-demo--tall {
+  min-height: 500px;
+}
+
+.lp .voice-orb-demo-head {
+  min-height: 72px;
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.lp .voice-orb-demo-head h2 {
+  font-family: var(--ui);
+  font-size: 22px;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.lp .voice-orb-demo-head span {
+  font-family: var(--ui);
+  color: var(--text-soft);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.lp .voice-orb-demo-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(380px, 1.1fr);
+  min-height: 350px;
+}
+
+.lp .voice-orb-stage {
+  position: relative;
+  min-height: 350px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 36px;
+  overflow: hidden;
+}
+
+.lp .voice-orb {
+  --orb-a: #D49AA0;
+  --orb-b: #A66B7A;
+  --orb-c: #6E3D5F;
+  position: relative;
+  width: clamp(150px, 15vw, 196px);
+  aspect-ratio: 1;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  isolation: isolate;
+}
+
+.lp .voice-orb--green {
+  --orb-a: #BFE2CF;
+  --orb-b: #55B998;
+  --orb-c: #157461;
+}
+
+.lp .voice-orb--blue {
+  --orb-a: #C8C5FF;
+  --orb-b: #7674E8;
+  --orb-c: #403AB1;
+}
+
+.lp .voice-orb--pink {
+  --orb-a: #F0C4CE;
+  --orb-b: #D06CBA;
+  --orb-c: #7C48CA;
+}
+
+.lp .voice-orb--yellow {
+  --orb-a: #F9E0A3;
+  --orb-b: #F0996B;
+  --orb-c: #D45363;
+}
+
+.lp .voice-orb--brown {
+  --orb-a: #E7D5C6;
+  --orb-b: #A97A62;
+  --orb-c: #59372D;
+}
+
+.lp .voice-orb-surface {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 31% 24%, rgba(255, 255, 255, 0.96) 0 3%, rgba(255, 255, 255, 0.48) 14%, transparent 35%),
+    radial-gradient(circle at 68% 76%, var(--orb-c), transparent 58%),
+    conic-gradient(from 205deg at 50% 50%, var(--orb-a), var(--orb-b), var(--orb-c), var(--orb-a));
+  box-shadow:
+    inset -18px -22px 38px rgba(45, 18, 48, 0.18),
+    inset 12px 12px 28px rgba(255, 255, 255, 0.32),
+    0 28px 54px -28px color-mix(in srgb, var(--orb-c) 72%, transparent);
+  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lp .voice-orb:hover .voice-orb-surface,
+.lp .voice-orb:focus-visible .voice-orb-surface {
+  transform: scale(1.035);
+}
+
+.lp .voice-orb:focus-visible {
+  outline: 1px solid var(--plum);
+  outline-offset: 8px;
+}
+
+.lp .voice-orb-halo {
+  position: absolute;
+  inset: -14px;
+  border: 1px solid color-mix(in srgb, var(--orb-b) 55%, transparent);
+  border-radius: 50%;
+  opacity: 0.45;
+}
+
+.lp .voice-orb.is-speaking .voice-orb-halo {
+  animation: lpVoicePulse 1.6s ease-out infinite;
+}
+
+.lp .voice-orb-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 8px rgba(58, 26, 61, 0.22));
+}
+
+.lp .voice-orb-stop {
+  width: 18px;
+  height: 18px;
+  border: 2px solid currentColor;
+}
+
+@keyframes lpVoicePulse {
+  0% { transform: scale(0.98); opacity: 0.5; }
+  75%, 100% { transform: scale(1.16); opacity: 0; }
+}
+
+.lp .voice-orb-stage-copy {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  font-family: var(--ui);
+}
+
+.lp .voice-orb-stage-copy span {
+  color: var(--text-soft);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lp .voice-orb-stage-copy strong {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-mid);
+}
+
+.lp .voice-orb-capabilities {
+  display: flex;
+  flex-direction: column;
+}
+
+.lp .voice-orb-capabilities button {
+  flex: 1;
+  width: 100%;
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 12px 30px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-mid);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.lp .voice-orb-capabilities button:last-child {
+  border-bottom: 0;
+}
+
+.lp .voice-orb-capabilities button:hover {
+  background: rgba(166, 107, 122, 0.07);
+  color: var(--text-dark);
+}
+
+.lp .voice-orb-capabilities button.is-active {
+  background: var(--plum);
+  color: #fff;
+}
+
+.lp .voice-orb-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #D06CBA;
+}
+
+.lp .voice-orb-swatch--green { background: #55B998; }
+.lp .voice-orb-swatch--blue { background: #7674E8; }
+.lp .voice-orb-swatch--pink { background: #D06CBA; }
+.lp .voice-orb-swatch--yellow { background: #F0996B; }
+.lp .voice-orb-swatch--brown { background: #A97A62; }
+
+.lp .voice-orb-capability-index,
+.lp .voice-orb-capability-action {
+  font-family: var(--ui);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.56;
+}
+
+.lp .voice-orb-capability-name {
+  font-family: var(--ui);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.lp .voice-orb-transcript {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  border-top: 1px solid var(--border);
+}
+
+.lp .voice-orb-transcript > div {
+  min-height: 125px;
+  padding: 20px 24px;
+}
+
+.lp .voice-orb-transcript > div + div {
+  border-left: 1px solid var(--border);
+}
+
+.lp .voice-orb-transcript span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-soft);
+  font-family: var(--ui);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lp .voice-orb-transcript p {
+  max-width: 58ch;
+  color: var(--text-mid);
+  font-family: var(--ui);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.lp .voice-orb-transcript > div:first-child p {
+  color: var(--text-dark);
+  font-family: "PP Neue York", Georgia, serif;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+/* ── Three layers: same layout and artwork, restored plum chapter ─────────── */
+
+.lp-sf-wash {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  visibility: hidden;
+  pointer-events: none;
+  background: var(--plum);
+  transform: scaleY(0);
+}
+
+.lp-sf-section {
+  z-index: 21;
+  background: var(--plum);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.lp-sf-container,
+.lp-sf-right,
+.lp-sf-panel {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.lp-sf-img-stack-item {
+  margin-top: -22%;
+  opacity: 0.35;
+  filter: none;
+  transition: opacity 0.3s ease;
+  transform: translateZ(0);
+}
+
+.lp-sf-img-stack-item:first-child {
+  margin-top: 0;
+}
+
+.lp-sf-img-stack-item.is-active {
+  opacity: 1;
+  filter: none;
+}
+
+.lp-sf-img-stack-item:not(.is-active):hover {
+  opacity: 0.68;
+  filter: none;
+  transform: translateZ(0);
+}
+
+.lp-sf-stack-connector {
+  height: 20px;
+}
+
+.lp-sf-stack-connector::before,
+.lp-sf-stack-connector::after {
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.lp-sf-panel-inner,
+.lp-sf-panel-head,
+.lp-sf-dialogue,
+.lp-sf-lower {
+  will-change: auto;
+}
+
+.lp-sf-panel--intro .lp-sf-intro-heading,
+.lp-sf-panel-title,
+.lp-sf-stat-value {
+  color: #fff;
+}
+
+.lp-sf-panel--intro .lp-sf-intro-heading {
+  font-family: "PP Neue York", Georgia, serif;
+  font-weight: 500;
+}
+
+.lp-sf-intro-sub,
+.lp-sf-text-box p {
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.lp-sf-panel-rule {
+  background: var(--blush);
+}
+
+.lp-sf-text-box {
+  border-color: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.lp-sf-stat {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.lp-sf-stat-label {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.lp-sf-section.is-plum .lp-sf-intro-heading,
+.lp-sf-section.is-plum .lp-sf-panel-title,
+.lp-sf-section.is-plum .lp-sf-stat-value {
+  color: #fff;
+}
+
+.lp-sf-section.is-plum .lp-sf-intro-sub,
+.lp-sf-section.is-plum .lp-sf-text-box p {
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.lp-sf-section.is-plum .lp-sf-container,
+.lp-sf-section.is-plum .lp-sf-right,
+.lp-sf-section.is-plum .lp-sf-panel,
+.lp-sf-section.is-plum .lp-sf-text-box,
+.lp-sf-section.is-plum .lp-sf-stat {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.lp-sf-section.is-plum .lp-sf-panel-rule {
+  background: var(--blush);
+}
+
+.lp-sf-section.is-plum .lp-sf-text-box {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+@media (max-width: 900px) {
+  .lp .voice-orb-demo-head {
+    align-items: flex-start;
+    padding: 18px 20px;
+  }
+
+  .lp .voice-orb-demo-head span {
+    display: none;
+  }
+
+  .lp .voice-orb-demo-grid,
+  .lp .voice-orb-transcript {
+    grid-template-columns: 1fr;
+  }
+
+  .lp .voice-orb-stage {
+    min-height: 300px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .lp .voice-orb-capabilities button {
+    min-height: 58px;
+  }
+
+  .lp .voice-orb-transcript > div + div {
+    border-top: 1px solid var(--border);
+    border-left: 0;
+  }
+
+  .lp-sf-img-stack {
+    padding-bottom: 2rem;
+  }
+
+  .lp-sf-img-stack-item {
+    margin-top: -18%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp .voice-orb.is-speaking .voice-orb-halo {
+    animation: none;
+  }
+}
+
+/* ── Dotted call player ───────────────────────────────────────────────────── */
+
+.lp .voice-orb-demo-head {
+  min-height: 96px;
+  padding: 22px 28px;
+}
+
+.lp .voice-orb-demo-head > div {
+  display: grid;
+  gap: 6px;
+}
+
+.lp .voice-orb-demo-head h2 {
+  font-size: clamp(22px, 2.2vw, 30px);
+}
+
+.lp .voice-orb-demo-head p {
+  color: var(--text-soft);
+  font-family: var(--ui);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.lp .voice-orb-demo-head .voice-orb-demo-head-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.lp .voice-orb-demo-head-note::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mauve);
+  content: "";
+}
+
+.lp .voice-orb-demo-grid {
+  grid-template-columns: minmax(330px, 0.72fr) minmax(520px, 1.28fr);
+  min-height: 520px;
+}
+
+.lp .voice-orb-stage {
+  min-height: 520px;
+  align-items: stretch;
+  padding: 24px;
+}
+
+.lp .voice-orb-inset {
+  width: 100%;
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: minmax(230px, 1fr) auto;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--tint);
+  box-shadow: inset 0 1px 2px rgba(58, 26, 61, 0.035);
+}
+
+.lp .voice-orb-visual {
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 26px 24px 16px;
+}
+
+.lp .voice-orb-visual > span {
+  color: var(--text-soft);
+  font-family: var(--ui);
+  font-size: 10px;
+  font-weight: 550;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.lp .voice-orb {
+  width: clamp(178px, 17vw, 226px);
+  border-radius: 4px;
+  color: var(--orb-b);
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.lp .voice-orb:hover,
+.lp .voice-orb:focus-visible {
+  transform: scale(1.018);
+}
+
+.lp .voice-orb:focus-visible {
+  border-radius: 4px;
+  outline: 1px solid var(--plum);
+  outline-offset: 5px;
+}
+
+.lp .voice-orb.is-speaking {
+  color: var(--orb-c);
+}
+
+.lp .voice-dotted-orb {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 14px 20px color-mix(in srgb, var(--orb-b) 18%, transparent));
+}
+
+.lp .voice-orb.is-speaking .voice-dotted-orb {
+  animation: none;
+}
+
+.lp .voice-orb-conversation {
+  border-top: 1px solid var(--border);
+}
+
+.lp .voice-orb-conversation > div {
+  min-height: 176px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px;
+}
+
+.lp .voice-orb-conversation span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--text-soft);
+  font-family: var(--ui);
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.lp .voice-orb-conversation p {
+  color: var(--text-mid);
+  font-family: var(--ui);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.lp .voice-orb-conversation > div:first-child p {
+  color: var(--text-dark);
+  font-family: "PP Neue York", Georgia, serif;
+  font-size: clamp(22px, 2.1vw, 29px);
+  line-height: 1.2;
+}
+
+.lp .voice-orb-capabilities {
+  justify-content: stretch;
+}
+
+.lp .voice-orb-capabilities button {
+  min-height: 94px;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 17px 30px;
+  color: var(--text-mid);
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.lp .voice-orb-capabilities button:hover {
+  background: rgba(58, 26, 61, 0.025);
+}
+
+.lp .voice-orb-capabilities button.is-active {
+  background: rgba(58, 26, 61, 0.045);
+  color: var(--text-dark);
+}
+
+.lp .voice-orb-star {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  color: var(--mauve);
+  opacity: 0.52;
+  transform-origin: center;
+  transition: opacity 150ms ease, transform 200ms ease;
+}
+
+.lp .voice-orb-star svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: currentColor;
+}
+
+.lp .voice-orb-star--green { color: #55B998; }
+.lp .voice-orb-star--blue { color: #7674E8; }
+.lp .voice-orb-star--pink { color: #D06CBA; }
+.lp .voice-orb-star--yellow { color: #F0996B; }
+.lp .voice-orb-star--brown { color: #A97A62; }
+
+.lp .voice-orb-capabilities button:hover .voice-orb-star {
+  opacity: 0.8;
+  transform: rotate(60deg);
+}
+
+.lp .voice-orb-capabilities button.is-active .voice-orb-star {
+  opacity: 1;
+  animation: lpStarArrive 720ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes lpStarArrive {
+  0% { transform: rotate(60deg) scale(1); }
+  72% { transform: rotate(390deg) scale(1.07); }
+  100% { transform: rotate(420deg) scale(1); }
+}
+
+.lp .voice-orb-capability-copy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.lp .voice-orb-capability-copy strong {
+  color: var(--text-dark);
+  font-family: var(--ui);
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.lp .voice-orb-capability-copy > span {
+  overflow: hidden;
+  color: var(--text-soft);
+  font-family: var(--ui);
+  font-size: 12px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp .voice-orb-capability-action {
+  display: inline-flex;
+  gap: 5px;
+  color: var(--text-mid);
+  font-size: 9px;
+  opacity: 0.68;
+}
+
+.lp .voice-orb-capabilities button.is-active .voice-orb-capability-action {
+  color: var(--plum);
+  opacity: 1;
+}
+
+@media (max-width: 900px) {
+  .lp .voice-orb-demo-head {
+    min-height: auto;
+  }
+
+  .lp .voice-orb-demo-head .voice-orb-demo-head-note {
+    display: none;
+  }
+
+  .lp .voice-orb-demo-head p {
+    max-width: 34ch;
+  }
+
+  .lp .voice-orb-demo-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lp .voice-orb-stage {
+    min-height: auto;
+    padding: 20px;
+  }
+
+  .lp .voice-orb-inset {
+    grid-template-rows: auto auto;
+  }
+
+  .lp .voice-orb-visual {
+    min-height: 270px;
+  }
+
+  .lp .voice-orb-capabilities button {
+    min-height: 76px;
+    padding: 14px 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp .voice-orb.is-speaking .voice-dotted-orb,
+  .lp .voice-orb-capabilities button.is-active .voice-orb-star {
+    animation: none;
+  }
+}
