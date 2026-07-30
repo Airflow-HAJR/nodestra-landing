@@ -1,17 +1,15 @@
 import { Fragment, useEffect, useRef, useState, type CSSProperties } from "react";
-import { motion, useScroll, useTransform } from "motion/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { CHAPTERS } from "../content";
-import { useReducedMotion } from "../hooks/useReducedMotion";
 
 gsap.registerPlugin(ScrollTrigger);
 
 // Images 1, 5, 4 (2nd and 3rd removed; 5th moved to middle)
 const LEFT_STACK = [
-  { src: "/assets/stack/voice.png",        label: "Voice" },
-  { src: "/assets/stack/airport-info.png", label: "Airport Info" },
-  { src: "/assets/stack/map-builder.png",  label: "Map Builder" },
+  { src: "/assets/stack/voice.webp",        label: "Voice" },
+  { src: "/assets/stack/airport-info.webp", label: "Airport Info" },
+  { src: "/assets/stack/map-builder.webp",  label: "Map Builder" },
 ];
 
 const CHAPTER_ACCENTS = [
@@ -33,67 +31,21 @@ function FeaturePanel({
   index,
   setPanelRef,
 }: FeaturePanelProps) {
-  const { reducedMotion } = useReducedMotion();
-  const { scrollY } = useScroll();
-  const panelRef = useRef<HTMLDivElement | null>(null);
-  const [panelTop, setPanelTop] = useState(0);
-  const [viewportH, setViewportH] = useState(1);
-
-  useEffect(() => {
-    function measure() {
-      const rect = panelRef.current?.getBoundingClientRect();
-      setPanelTop((rect?.top ?? 0) + window.scrollY);
-      setViewportH(window.innerHeight || 1);
-    }
-
-    measure();
-    const ro = new ResizeObserver(measure);
-    if (panelRef.current) ro.observe(panelRef.current);
-    window.addEventListener("resize", measure);
-
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, []);
-
-  const range: [number, number] = [
-    panelTop - viewportH * 0.8,
-    panelTop + viewportH * 0.55,
-  ];
-  const titleY = useTransform(
-    scrollY,
-    range,
-    reducedMotion ? [0, 0] : [34, -28],
-  );
-  const clipPath = useTransform(
-    scrollY,
-    [range[0], panelTop - viewportH * 0.18],
-    reducedMotion
-      ? ["inset(0% 0% 0% 0%)", "inset(0% 0% 0% 0%)"]
-      : ["inset(8% 0% 8% 0%)", "inset(0% 0% 0% 0%)"],
-  );
-
-  const setRefs = (el: HTMLDivElement | null) => {
-    panelRef.current = el;
-    setPanelRef(el);
-  };
-
   return (
     <div
       className="lp-sf-panel"
-      ref={setRefs}
+      ref={setPanelRef}
       style={
         {
           "--chapter-accent": CHAPTER_ACCENTS[index],
         } as CSSProperties
       }
     >
-      <motion.article className="lp-sf-panel-inner" style={{ clipPath }}>
-        <motion.div className="lp-sf-panel-head" style={{ y: titleY }}>
+      <article className="lp-sf-panel-inner">
+        <div className="lp-sf-panel-head">
           <span className="lp-sf-panel-rule" aria-hidden="true" />
           <h3 className="lp-sf-panel-title">{chapter.title}</h3>
-        </motion.div>
+        </div>
 
         <div className="lp-sf-text-box">
           <p>{chapter.copy}</p>
@@ -109,7 +61,7 @@ function FeaturePanel({
             ))}
           </div>
         </div>
-      </motion.article>
+      </article>
     </div>
   );
 }
@@ -125,6 +77,7 @@ export function StickyFeatures() {
   const introPanelRef = useRef<HTMLDivElement | null>(null);
   const stackItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const connectorRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const washRef = useRef<HTMLDivElement | null>(null);
 
   /* IntersectionObserver for active panel tracking (intro = -1, chapters = 0/1/2) */
   useEffect(() => {
@@ -152,84 +105,120 @@ export function StickyFeatures() {
   }, []);
 
 
-  /* GSAP: snap page background/class when section enters view */
   const sectionRef = useRef<HTMLElement | null>(null);
+
+  /* Transform-only plum curtain. It is visible only while entering or leaving
+     the section, then removed from compositing for the long middle stretch. */
   useEffect(() => {
-    const overlay = document.getElementById("lp-bg-overlay");
     const section = sectionRef.current;
-    const pageRoot = section?.closest(".lp");
-    if (!overlay || !section || !pageRoot) return;
+    const wash = washRef.current;
+    if (!wash || !section) return;
 
-    const goPlum = () => {
-      overlay.style.backgroundColor = "#ffffff";
-      section.classList.add("is-plum");
-      pageRoot.classList.add("is-plum-story");
+    const show = () => {
+      wash.style.visibility = "visible";
+      wash.style.willChange = "transform";
     };
-    const goWhite = () => {
-      overlay.style.backgroundColor = "#ffffff";
-      section.classList.remove("is-plum");
-      pageRoot.classList.remove("is-plum-story");
+    const hide = () => {
+      wash.style.visibility = "hidden";
+      wash.style.willChange = "auto";
     };
 
-    const st = ScrollTrigger.create({
+    const enterTween = gsap.fromTo(
+      wash,
+      { scaleY: 0, transformOrigin: "bottom center" },
+      { scaleY: 1, transformOrigin: "bottom center", ease: "none", paused: true },
+    );
+    const enter = ScrollTrigger.create({
       trigger: section,
-      start: "top 50%",
-      onEnter: goPlum,
-      onLeaveBack: goWhite,
+      start: "top bottom",
+      end: "top top",
+      scrub: true,
+      animation: enterTween,
+      onEnter: show,
+      onEnterBack: show,
+      onLeave: hide,
+      onLeaveBack: hide,
     });
 
-    /* reset as soon as the next section begins entering the viewport */
-    const stOut = ScrollTrigger.create({
+    const exitTween = gsap.fromTo(
+      wash,
+      { scaleY: 1, transformOrigin: "top center" },
+      {
+        scaleY: 0,
+        transformOrigin: "top center",
+        ease: "none",
+        paused: true,
+        immediateRender: false,
+      },
+    );
+    const exit = ScrollTrigger.create({
       trigger: section,
       start: "bottom bottom",
-      onEnter: goWhite,
-      onLeaveBack: goPlum,
+      end: "bottom top",
+      scrub: true,
+      animation: exitTween,
+      onEnter: show,
+      onEnterBack: show,
+      onLeave: hide,
+      onLeaveBack: hide,
     });
 
     return () => {
-      st.kill();
-      stOut.kill();
+      enter.kill();
+      exit.kill();
+      enterTween.kill();
+      exitTween.kill();
     };
   }, []);
 
-  /* GSAP: spread images as section scrolls into view (~100vh window, no lag) */
+  /* The original stack spread, rebuilt with translate transforms. The old
+     margin animation forced layout on every scroll frame. */
   useEffect(() => {
     const items = stackItemRefs.current.filter((el): el is HTMLButtonElement => el !== null);
     const connectors = connectorRefs.current.filter((el): el is HTMLDivElement => el !== null);
     const wrapper = introWrapperRef.current;
     if (!wrapper || items.length < 2) return;
 
-    // Start fully stacked
-    gsap.set(items.slice(1), { marginTop: "-62%" });
-    gsap.set(connectors, { height: 0, opacity: 0 });
+    const movingItems = items.slice(1);
+    if (window.matchMedia("(max-width: 900px), (prefers-reduced-motion: reduce)").matches) {
+      gsap.set(movingItems, { yPercent: 0 });
+      gsap.set(connectors, { scaleY: 1, opacity: 1 });
+      return;
+    }
+
+    gsap.set(movingItems, {
+      yPercent: (index) => -(index + 1) * 42,
+    });
+    gsap.set(connectors, { scaleY: 0, opacity: 0, transformOrigin: "top center" });
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: wrapper,
-        // Start only once the intro panel is fully locked (wrapper top === viewport top).
-        // End when the wrapper's extra scroll budget is exhausted (bottom === viewport bottom).
-        // This is exactly the 150vh of "pinned" scroll — animation plays only while locked.
         start: "top top",
         end: "bottom bottom",
-        scrub: 0.4,
+        scrub: 0.2,
       },
     });
 
-    // Spread to -22% overlap — clearly 3 cards, still fit in 100dvh
-    tl.to(items.slice(1), { marginTop: "-22%", ease: "power2.out" }, 0)
-      .to(connectors, { height: 20, opacity: 1, ease: "power2.out" }, 0);
+    tl.to(movingItems, { yPercent: 0, ease: "power2.inOut" }, 0).to(
+      connectors,
+      { scaleY: 1, opacity: 1, ease: "power2.inOut" },
+      0,
+    );
 
     return () => { tl.kill(); };
   }, []);
 
   return (
-    <section
-      id="features"
-      className="lp-sf-section"
-      aria-labelledby="lp-sf-title"
-      ref={sectionRef}
-    >
-      <div className="lp-sf-container">
+    <>
+      <div ref={washRef} className="lp-sf-wash" aria-hidden="true" />
+      <section
+        id="features"
+        className="lp-sf-section is-plum"
+        aria-labelledby="lp-sf-title"
+        ref={sectionRef}
+      >
+        <div className="lp-sf-container">
         {/* Left: sticky sidebar — image stack only */}
         <div className="lp-sf-left">
           <div className="lp-sf-img-stack">
@@ -243,7 +232,7 @@ export function StickyFeatures() {
                 )}
                 <button
                   type="button"
-                  className={`lp-sf-img-stack-item${activePanel === i ? " is-active" : ""}`}
+                  className={`lp-sf-img-stack-item${activePanel < 0 || activePanel === i ? " is-active" : ""}`}
                   style={{ "--stack-i": i } as CSSProperties}
                   aria-label={`Scroll to ${img.label} section`}
                   ref={(el) => { stackItemRefs.current[i] = el; }}
@@ -289,7 +278,8 @@ export function StickyFeatures() {
             );
           })}
         </div>
-      </div>
-    </section>
+        </div>
+      </section>
+    </>
   );
 }
