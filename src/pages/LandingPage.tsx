@@ -3,7 +3,6 @@ import "../styles/landing.css";
 import { SIGN_IN_PAGE_URL } from "../lib/appConfig";
 import { Globe } from "../components/ui/globe";
 import { StickyFeatures } from "../features/landing/components/StickyFeatures";
-import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import gsap from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 
@@ -77,12 +76,158 @@ const ORB_SCENES: OrbScene[] = [
 ];
 
 const ORB_VARIANTS = [
-  "orb-green",
-  "orb-blue",
-  "orb-pink",
-  "orb-yellow",
-  "orb-brown",
+  "green",
+  "blue",
+  "pink",
+  "yellow",
+  "brown",
 ] as const;
+
+const ORB_COLORS = ["#55B998", "#7674E8", "#D06CBA", "#F0996B", "#A97A62"] as const;
+
+function RoundedStar() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M10.38 3.94Q12 1.5 13.63 3.94Q15.25 6.37 18.17 6.56Q21.09 6.75 19.8 9.38Q18.5 12 19.8 14.63Q21.09 17.25 18.17 17.44Q15.25 17.63 13.63 20.07Q12 22.5 10.38 20.07Q8.75 17.63 5.83 17.44Q2.91 17.25 4.21 14.63Q5.5 12 4.21 9.38Q2.91 6.75 5.83 6.56Q8.75 6.37 10.38 3.94Z" />
+    </svg>
+  );
+}
+
+function PulseOrb({ color, speaking }: { color: string; speaking: boolean }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d");
+    if (!canvas || !context) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let frame = 0;
+    let lastFrame = performance.now();
+    let phase = 0;
+    let amplitude = speaking ? 0.55 : 0.18;
+    let size = 216;
+    let dpr = 1;
+    let isVisible = true;
+    let grid: Array<{ x: number; y: number; distance: number; angle: number }> = [];
+
+    const draw = () => {
+      const maxRadius = size * (4 / 216);
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      context.clearRect(0, 0, size, size);
+      context.fillStyle = color;
+
+      for (const point of grid) {
+        const wave =
+          Math.sin(point.distance * 6.4 - phase * 3.2) * 0.5 +
+          Math.sin(point.angle * 3 + phase * 1.5) * 0.18;
+        const scale =
+          (1 - point.distance * point.distance * 0.6) *
+          (1 + wave * 0.55 * amplitude);
+        const radius = Math.max(0.4, maxRadius * scale);
+
+        context.globalAlpha = 0.95 - point.distance * 0.5;
+        context.beginPath();
+        context.arc(point.x, point.y, radius, 0, Math.PI * 2);
+        context.fill();
+      }
+      context.globalAlpha = 1;
+    };
+
+    const resize = () => {
+      size = Math.max(1, canvas.clientWidth || 216);
+      dpr = Math.min(window.devicePixelRatio || 1, 3);
+      canvas.width = Math.round(size * dpr);
+      canvas.height = Math.round(size * dpr);
+
+      const spacing = size * (13 / 216);
+      const maxRadius = size * (4 / 216);
+      const fieldRadius = size / 2 - maxRadius - 2;
+      const rowHeight = spacing * 0.87;
+      const points = [];
+
+      for (
+        let row = -Math.ceil(fieldRadius / rowHeight);
+        row <= Math.ceil(fieldRadius / rowHeight);
+        row += 1
+      ) {
+        const y = row * rowHeight;
+        for (
+          let x = -fieldRadius - spacing;
+          x <= fieldRadius + spacing;
+          x += spacing
+        ) {
+          const offsetX = x + (Math.abs(row) % 2 ? spacing / 2 : 0);
+          const distance = Math.hypot(offsetX, y);
+          if (distance > fieldRadius) continue;
+          points.push({
+            x: offsetX + size / 2,
+            y: y + size / 2,
+            distance: distance / fieldRadius,
+            angle: Math.atan2(y, offsetX),
+          });
+        }
+      }
+
+      grid = points;
+      draw();
+    };
+
+    const stop = () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      frame = 0;
+    };
+
+    const tick = (time: number) => {
+      frame = 0;
+      if (!isVisible || document.hidden || reducedMotion.matches) return;
+
+      const delta = Math.min((time - lastFrame) / 1000, 0.1);
+      lastFrame = time;
+      phase += delta;
+      const target = speaking ? 1 : 0.18;
+      amplitude += (target - amplitude) * Math.min(1, delta * 6);
+      draw();
+      frame = window.requestAnimationFrame(tick);
+    };
+
+    const start = () => {
+      stop();
+      draw();
+      if (isVisible && !document.hidden && !reducedMotion.matches) {
+        lastFrame = performance.now();
+        frame = window.requestAnimationFrame(tick);
+      }
+    };
+
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        start();
+      },
+      { rootMargin: "80px" },
+    );
+    const resizeObserver = new ResizeObserver(resize);
+    const onVisibilityChange = () => start();
+
+    visibilityObserver.observe(canvas);
+    resizeObserver.observe(canvas);
+    reducedMotion.addEventListener("change", start);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    resize();
+    start();
+
+    return () => {
+      stop();
+      visibilityObserver.disconnect();
+      resizeObserver.disconnect();
+      reducedMotion.removeEventListener("change", start);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [color, speaking]);
+
+  return <canvas ref={canvasRef} className="voice-dotted-orb" aria-hidden="true" />;
+}
 
 function NodestraMark() {
   return (
@@ -123,12 +268,9 @@ function scrollToSection(id: string) {
 
 function TopNav({ onBookDemo }: { onBookDemo: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isNavVisible, setIsNavVisible] = useState(true);
-  const [isNavHovered, setIsNavHovered] = useState(false);
+  const [navHidden, setNavHidden] = useState(false);
   const [navHeight, setNavHeight] = useState(82);
   const navRef = useRef<HTMLDivElement>(null);
-  const lastScrollYRef = useRef(0);
-  const { scrollY } = useScroll();
 
   useEffect(() => {
     const navEl = navRef.current;
@@ -146,55 +288,38 @@ function TopNav({ onBookDemo }: { onBookDemo: () => void }) {
     };
   }, []);
 
-  useMotionValueEvent(scrollY, "change", (currentY) => {
-    const deltaY = currentY - lastScrollYRef.current;
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let frame = 0;
 
-    if (menuOpen) {
-      setIsNavVisible(true);
-      lastScrollYRef.current = currentY;
-      return;
-    }
+    const update = () => {
+      const nextY = window.scrollY;
+      const delta = nextY - lastY;
 
-    // Always show at the very top of the page
-    if (currentY <= 40) {
-      setIsNavVisible(true);
-    } 
-    // Hide when scrolling down significantly
-    else if (deltaY > 5) {
-      setIsNavVisible(false);
-    } 
-    // Show when scrolling up significantly
-    else if (deltaY < -4) {
-      setIsNavVisible(true);
-    }
+      if (nextY < 80 || delta < -8) setNavHidden(false);
+      else if (delta > 8 && !menuOpen) setNavHidden(true);
 
-    lastScrollYRef.current = currentY;
-  });
+      if (Math.abs(delta) > 8) lastY = nextY;
+      frame = 0;
+    };
 
-  const shouldShowNav = menuOpen || isNavVisible || isNavHovered;
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [menuOpen]);
 
   return (
     <div className="nav-row-slot" style={{ height: `${navHeight}px` }}>
       <div className="nav-row-fixed-shell">
-        <motion.div
+        <div
           ref={navRef}
-          className={`nav-row${menuOpen ? " nav-row--open" : ""}${!shouldShowNav ? " nav-row--hidden" : ""}`}
-          onMouseEnter={() => setIsNavHovered(true)}
-          onMouseLeave={() => setIsNavHovered(false)}
-          initial={false}
-          animate={shouldShowNav ? "visible" : "hidden"}
-          variants={{
-            visible: {
-              y: 0,
-              opacity: 1,
-              transition: { type: "spring", stiffness: 260, damping: 32, mass: 0.95 },
-            },
-            hidden: {
-              y: -96,
-              opacity: 0,
-              transition: { duration: 0.34, ease: [0.22, 1, 0.36, 1] },
-            },
-          }}
+          className={`nav-row${menuOpen ? " nav-row--open" : ""}${navHidden ? " nav-row--hidden" : ""}`}
         >
           <NodestraMark />
           <div className="links">
@@ -261,7 +386,7 @@ function TopNav({ onBookDemo }: { onBookDemo: () => void }) {
               </div>
             </div>
           )}
-        </motion.div>
+        </div>
       </div>
     </div>
   );
@@ -281,263 +406,117 @@ function SectionTag({ label }: { label: string }) {
 function OrbDemo({ tall = false }: { tall?: boolean }) {
   const [center, setCenter] = useState(2);
   const [activePlaying, setActivePlaying] = useState(-1);
-  const [speaking, setSpeaking] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const stopPlayback = useCallback(() => {
-    if (typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
       audioRef.current = null;
     }
+    setActivePlaying(-1);
   }, []);
 
-  const playAnswer = useCallback((i: number) => {
-    setCenter(i);
-    setActivePlaying(i);
-    stopPlayback();
-    setSpeaking(true);
-    const scene = ORB_SCENES[i];
-    if (scene.audioSrc) {
+  useEffect(() => stopPlayback, [stopPlayback]);
+
+  const playAnswer = useCallback(
+    (index: number) => {
+      if (activePlaying === index) {
+        stopPlayback();
+        return;
+      }
+
+      stopPlayback();
+      setCenter(index);
+      const scene = ORB_SCENES[index];
+      if (!scene.audioSrc) return;
+
       const audio = new Audio(scene.audioSrc);
-      audio.volume = 1;
       audioRef.current = audio;
       audio.ontimeupdate = () => {
         if (!Number.isFinite(audio.duration)) return;
+        const fadeTail = scene.fadeOutSeconds ?? 3;
         const remaining = audio.duration - audio.currentTime;
-        audio.volume = remaining <= 4 ? Math.max(0, remaining / 4) : 1;
+        audio.volume = remaining <= fadeTail ? Math.max(0, remaining / fadeTail) : 1;
       };
-      audio.onplay = () => setSpeaking(true);
-      audio.onended = () => {
-        setSpeaking(false);
+      const clear = () => {
+        if (audioRef.current === audio) audioRef.current = null;
         setActivePlaying(-1);
       };
-      audio.onerror = () => {
-        setSpeaking(false);
-        setActivePlaying(-1);
-      };
-      void audio.play().catch(() => {
-        setSpeaking(false);
-        setActivePlaying(-1);
-      });
-      return;
-    }
-    try {
-      const u = new SpeechSynthesisUtterance(scene.a);
-      u.rate = 1.02;
-      u.pitch = 1.0;
-      const voices = window.speechSynthesis.getVoices();
-      const en = voices.find((v) => /en[-_]/i.test(v.lang));
-      if (en) u.voice = en;
-      u.onstart = () => setSpeaking(true);
-      u.onend = () => {
-        setSpeaking(false);
-        setActivePlaying(-1);
-      };
-      window.speechSynthesis.speak(u);
-    } catch {
-      setSpeaking(false);
-      setActivePlaying(-1);
-      /* no audio in this browser */
-    }
-  }, [stopPlayback]);
-
-  const shift = useCallback(
-    (delta: number) => {
-      setCenter((c) => Math.max(0, Math.min(ORB_SCENES.length - 1, c + delta)));
-      stopPlayback();
-      setSpeaking(false);
-      setActivePlaying(-1);
+      audio.onended = clear;
+      audio.onerror = clear;
+      void audio.play().then(() => setActivePlaying(index), clear);
     },
-    [stopPlayback],
+    [activePlaying, stopPlayback],
   );
 
   const activeScene = ORB_SCENES[center];
+  const isPlaying = activePlaying === center;
 
   return (
-    <div
-      style={{
-        position: "relative",
-        borderRadius: 10,
-        padding: "36px 28px 18px",
-        background: "#ffffff",
-        border: "1px solid var(--border)",
-        overflow: "hidden",
-        minHeight: tall ? 500 : 460,
-      }}
-    >
-      <div style={{ marginBottom: 18, position: "relative", zIndex: 3 }}>
-        <div
-          style={{
-            fontFamily: "var(--display)",
-            fontSize: 24,
-            lineHeight: 1,
-            color: "var(--text-dark)",
-            fontWeight: 700,
-          }}
-        >
-          5 key capabilities, just tap to hear. 
+    <div className={`voice-orb-demo${tall ? " voice-orb-demo--tall" : ""}`}>
+      <header className="voice-orb-demo-head">
+        <div>
+          <h2>See Nodestra in action</h2>
+          <p>Five real calls from the terminal. Choose one to hear it.</p>
         </div>
-        <div style={{ marginTop: 10, height: 1.5, background: "var(--border)" }} />
-      </div>
+        <span className="voice-orb-demo-head-note">Real Nodestra agent audio</span>
+      </header>
 
-      {/* gooey filter for orb balls */}
-      <svg
-        aria-hidden="true"
-        width="0"
-        height="0"
-        style={{ position: "absolute", width: 0, height: 0 }}
-      >
-        <filter id="lpGooey">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="6" />
-          <feColorMatrix
-            values="1 0 0 0 0
-                    0 1 0 0 0
-                    0 0 1 0 0
-                    0 0 0 20 -10"
-          />
-        </filter>
-      </svg>
+      <div className="voice-orb-demo-grid">
+        <div className="voice-orb-stage">
+          <div className="voice-orb-inset">
+            <div className="voice-orb-visual">
+              <button
+                type="button"
+                className={`voice-orb voice-orb--${ORB_VARIANTS[center]}${isPlaying ? " is-speaking" : ""}`}
+                onClick={() => playAnswer(center)}
+                aria-label={`${isPlaying ? "Stop" : "Play"} ${activeScene.cap} voice sample`}
+                aria-pressed={isPlaying}
+              >
+                <PulseOrb color={ORB_COLORS[center]} speaking={isPlaying} />
+              </button>
+              <span>{isPlaying ? "Speaking now — tap to stop" : "Tap the dots to hear the call"}</span>
+            </div>
 
-      <div className="orb-carousel">
-        <button
-          type="button"
-          className="orb-carousel-nav prev"
-          onClick={() => shift(-1)}
-          disabled={center === 0}
-          aria-label="Previous orb"
-        >
-          ←
-        </button>
-        <button
-          type="button"
-          className="orb-carousel-nav next"
-          onClick={() => shift(1)}
-          disabled={center === ORB_SCENES.length - 1}
-          aria-label="Next orb"
-        >
-          →
-        </button>
-
-        {ORB_SCENES.map((s, i) => {
-          const d = i - center;
-          const abs = Math.abs(d);
-          const orbVisualSize = 64 * 2.025;
-          const scaleByDistance = [1, 0.58, 0.28];
-          const equalGap = 75;
-          const offsetByDistance = [
-            0,
-            (orbVisualSize * scaleByDistance[0]) / 2 +
-              (orbVisualSize * scaleByDistance[1]) / 2 +
-              equalGap,
-            (orbVisualSize * scaleByDistance[0]) / 2 +
-              orbVisualSize * scaleByDistance[1] +
-              (orbVisualSize * scaleByDistance[2]) / 2 +
-              equalGap * 2,
-          ];
-          const tx = Math.sign(d) * (offsetByDistance[abs] ?? 0);
-          const scale = scaleByDistance[abs] ?? 0.28;
-          const opacity = abs === 0 ? 1 : abs === 1 ? 0.88 : abs === 2 ? 0.34 : 0;
-          const pointerEvents = abs <= 1 ? "auto" : "none";
-          return (
-            <div
-              key={i}
-              className="orb-slot"
-              data-orb-distance={abs}
-              style={{
-                transform: `translateX(${tx}px) scale(${scale})`,
-                zIndex: 10 - abs,
-                opacity,
-                pointerEvents,
-              }}
-            >
-              <div className="container-vao">
-                <button
-                  type="button"
-                  onClick={() => playAnswer(i)}
-                  aria-label={`Play: ${s.q}`}
-                  aria-pressed={activePlaying === i && speaking}
-                  className={`orb ${ORB_VARIANTS[i]}${
-                    activePlaying === i && speaking ? " is-speaking" : ""
-                  }`}
-                >
-                  <div className="icons">
-                    <svg
-                      className="svg"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                    >
-                      <g className="close">
-                        <path
-                          fill="currentColor"
-                          d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59L7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12L5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 1 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4"
-                        />
-                      </g>
-                      <g fill="none" className="mic">
-                        <rect width="8" height="13" x="8" y="2" fill="currentColor" rx="4" />
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 11a7 7 0 1 0 14 0m-7 10v-2"
-                        />
-                      </g>
-                    </svg>
-                  </div>
-                  <div className="ball">
-                    <div className="container-lines" />
-                    <div className="container-rings" />
-                  </div>
-                </button>
+            <div className="voice-orb-conversation" aria-live="polite">
+              <div>
+                <span>Passenger</span>
+                <p>“{activeScene.q}”</p>
               </div>
             </div>
-          );
-        })}
-      </div>
-
-      <div
-        className="stack"
-        style={{
-          alignItems: "center",
-          gap: 6,
-          textAlign: "center",
-          marginTop: 18,
-          position: "relative",
-          zIndex: 2,
-        }}
-      >
-        <span
-          className="lbl"
-          style={{
-            color: "var(--blue-core)",
-            textTransform: "uppercase",
-            letterSpacing: "0.08em",
-            fontSize: 11,
-          }}
-        >
-          {activeScene.cap}
-        </span>
-        <div
-          style={{
-            fontFamily: "var(--ui)",
-            fontWeight: 700,
-            fontSize: 26,
-            lineHeight: 1.15,
-            color: "var(--text-dark)",
-            maxWidth: "32ch",
-          }}
-        >
-          "{activeScene.q}"
+          </div>
         </div>
-        <span className="lbl" style={{ color: "var(--text-soft)" }}>
-          {activeScene.meta}
-        </span>
+
+        <div className="voice-orb-capabilities" role="list" aria-label="Voice capabilities">
+          {ORB_SCENES.map((scene, index) => {
+            const selected = center === index;
+            return (
+              <button
+                key={scene.cap}
+                type="button"
+                role="listitem"
+                className={selected ? "is-active" : ""}
+                onClick={() => playAnswer(index)}
+                aria-current={selected ? "true" : undefined}
+              >
+                <span
+                  key={`${selected}-${selected && isPlaying}`}
+                  className={`voice-orb-star voice-orb-star--${ORB_VARIANTS[index]}`}
+                >
+                  <RoundedStar />
+                </span>
+                <span className="voice-orb-capability-copy">
+                  <strong>{scene.cap}</strong>
+                  <span>{scene.iso}</span>
+                </span>
+                <span className="voice-orb-capability-action">
+                  {selected && isPlaying ? "Stop" : "Play"} <span aria-hidden="true">→</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -548,7 +527,7 @@ function HeroDemo({ onBookDemo }: { onBookDemo: () => void }) {
     <div className="stack" style={{ marginTop: 28 }}>
       <div className="grid g12" style={{ marginTop: 16, alignItems: "end" }}>
         <div className="col-span-7">
-          <h1 style={{ fontSize: 42, lineHeight: 1.05, letterSpacing: "-0.01em" }}>
+          <h1 style={{ fontSize: "clamp(34px, 4vw, 42px)", lineHeight: 1.05, letterSpacing: "-0.01em" }}>
             Simplify the passenger experience at your airport with voice intelligence.
           </h1>
           <p
@@ -560,7 +539,7 @@ function HeroDemo({ onBookDemo }: { onBookDemo: () => void }) {
               maxWidth: "55ch",
             }}
           >
-            The Nodestra AI agent connects with your airport's current softwares to curate personalized, intelligent guidance for every passenger to navigate through airports. All over the phone, all through voice.
+            Passengers call one number and ask for help in their own words. Nodestra connects to the maps, flight data, and terminal systems your airport already runs, then turns that live context into clear guidance over the phone.
           </p>
         </div>
         <div className="col-span-5 row" style={{ justifyContent: "flex-end", gap: 10 }}>
@@ -592,8 +571,9 @@ function ProblemFraming() {
         <div className="col-span-5 stack">
           <span className="lbl">Source: airport ops surveys, 2024–25</span>
           <p style={{ fontFamily: "var(--hand)", fontSize: 18, lineHeight: 1.35 }}>
-            That means travelers must juggle 47 different non-intuitive websites, kiosks,
-            or display boards just to get through your airport. That sucks.
+            Each answer is usually somewhere — on a display, in a website, at a kiosk, or
+            behind a service desk. The passenger still has to find it, interpret it, and
+            work out what to do next.
           </p>
         </div>
       </div>
@@ -818,6 +798,48 @@ function toneStyle(tone: BentoTone): React.CSSProperties {
   };
 }
 
+function PreviewVideo({ src, poster }: { src: string; poster: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  const play = () => {
+    void ref.current?.play().catch(() => {
+      /* The poster remains visible if the browser declines playback. */
+    });
+  };
+
+  const reset = () => {
+    const video = ref.current;
+    if (!video) return;
+    video.pause();
+    video.currentTime = 0;
+  };
+
+  return (
+    <video
+      ref={ref}
+      className="bento-video"
+      src={src}
+      poster={poster}
+      muted
+      playsInline
+      loop
+      preload="none"
+      onPointerEnter={play}
+      onPointerLeave={reset}
+      onFocus={play}
+      onBlur={reset}
+      onClick={() => {
+        const video = ref.current;
+        if (!video) return;
+        if (video.paused) play();
+        else reset();
+      }}
+      tabIndex={0}
+      aria-label="Play product preview"
+    />
+  );
+}
+
 function AnalyticsBentoCard({ card }: { card: typeof BENTO_CARDS[number] }) {
   return (
     <div
@@ -831,14 +853,9 @@ function AnalyticsBentoCard({ card }: { card: typeof BENTO_CARDS[number] }) {
         {card.d}
       </p>
       <div className="bento-img bento-video-wrap">
-        <video
-          className="bento-video"
+        <PreviewVideo
           src="/assets/analytics-hover.webm"
-          autoPlay
-          muted
-          playsInline
-          loop
-          preload="metadata"
+          poster="/assets/analytics-poster.webp"
         />
       </div>
     </div>
@@ -858,14 +875,9 @@ function AdsBentoCard({ card }: { card: typeof BENTO_CARDS[number] }) {
         {card.d}
       </p>
       <div className="bento-img bento-video-wrap">
-        <video
-          className="bento-video"
+        <PreviewVideo
           src="/assets/ad-revenue-hover.webm"
-          autoPlay
-          muted
-          playsInline
-          loop
-          preload="metadata"
+          poster="/assets/ads-poster.webp"
         />
       </div>
     </div>
@@ -1098,9 +1110,7 @@ export function LandingPage() {
 
   return (
     <div className="lp">
-      <div id="lp-bg-overlay" aria-hidden="true" />
       <div className="sheet">
-        <div className="lp-ambient" aria-hidden="true" />
         <TopNav onBookDemo={openDemo} />
         <div id="section-product" className="lp-hero-wrapper">
           <HeroDemo onBookDemo={openDemo} />
@@ -1116,10 +1126,11 @@ export function LandingPage() {
             <SectionTag label="What we are" />
             <div className="lp-section-bridge-block">
               <p className="lp-section-bridge">
-                So we built one AI agent that answers all of those questions.
+                Nodestra gives every passenger one place to ask.
               </p>
               <p className="lp-section-bridge-sub">
-                Wire in your indoor map, flight telemetry, and gate data. Pick a voice. Deploy a phone number. That's it.
+                It brings your indoor map, flight telemetry, gate data, and terminal
+                information into a voice that can explain what each person should do next.
               </p>
             </div>
             <FeaturesGrid />

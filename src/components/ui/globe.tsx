@@ -51,7 +51,7 @@ export function Globe({
   speed = 0.003,
   theta = 0.2,
   diffuse = 1.5,
-  mapSamples = 12000,
+  mapSamples = 6000,
 }: GlobeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointerInteracting = useRef<{ x: number; y: number } | null>(null);
@@ -111,8 +111,11 @@ export function Globe({
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     let globe: ReturnType<typeof createGlobe> | null = null;
-    let animationId: number;
+    let animationId = 0;
     let phi = 0;
+    let visible = false;
+    let visibilityObserver: IntersectionObserver | null = null;
+    let handleVisibility: (() => void) | null = null;
 
     function init() {
       const width = canvas.offsetWidth;
@@ -141,7 +144,11 @@ export function Globe({
         opacity: 0.7,
       });
 
-      function animate() {
+      const animate = () => {
+        if (!visible || !globe) {
+          animationId = 0;
+          return;
+        }
         if (!isPausedRef.current) {
           phi += speed;
           if (Math.abs(velocity.current.phi) > 0.0001 || Math.abs(velocity.current.theta) > 0.0001) {
@@ -157,7 +164,7 @@ export function Globe({
             thetaOffsetRef.current += (thetaMax - thetaOffsetRef.current) * 0.1;
           }
         }
-        globe!.update({
+        globe.update({
           phi: phi + phiOffsetRef.current + dragOffset.current.phi,
           theta: theta + thetaOffsetRef.current + dragOffset.current.theta,
           dark,
@@ -170,10 +177,35 @@ export function Globe({
           arcs: arcs.map((a) => ({ from: a.from, to: a.to, id: a.id })),
         });
         animationId = requestAnimationFrame(animate);
-      }
+      };
 
-      animate();
-      setTimeout(() => { if (canvas) canvas.style.opacity = "1"; });
+      const start = () => {
+        if (animationId || !visible) return;
+        animationId = requestAnimationFrame(animate);
+      };
+      const stop = () => {
+        if (animationId) cancelAnimationFrame(animationId);
+        animationId = 0;
+      };
+
+      visibilityObserver = new IntersectionObserver(
+        ([entry]) => {
+          visible = entry.isIntersecting && !document.hidden;
+          if (visible) start();
+          else stop();
+        },
+        { rootMargin: "160px 0px" },
+      );
+      visibilityObserver.observe(canvas);
+
+      handleVisibility = () => {
+        visible = !document.hidden && canvas.getBoundingClientRect().bottom > -160 &&
+          canvas.getBoundingClientRect().top < window.innerHeight + 160;
+        if (visible) start();
+        else stop();
+      };
+      document.addEventListener("visibilitychange", handleVisibility);
+      canvas.style.opacity = "1";
     }
 
     if (canvas.offsetWidth > 0) {
@@ -189,6 +221,8 @@ export function Globe({
       return () => {
         if (animationId) cancelAnimationFrame(animationId);
         if (globe) globe.destroy();
+        visibilityObserver?.disconnect();
+        if (handleVisibility) document.removeEventListener("visibilitychange", handleVisibility);
         ro.disconnect();
       };
     }
@@ -196,6 +230,8 @@ export function Globe({
     return () => {
       if (animationId) cancelAnimationFrame(animationId);
       if (globe) globe.destroy();
+      visibilityObserver?.disconnect();
+      if (handleVisibility) document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [markers, arcs, markerColor, baseColor, arcColor, glowColor, dark, mapBrightness, markerSize, markerElevation, arcWidth, arcHeight, speed, theta, diffuse, mapSamples]);
 
@@ -234,7 +270,7 @@ export function Globe({
             fontSize: "9px",
             fontWeight: 600,
             letterSpacing: "0.02em",
-            borderRadius: "10px",
+            borderRadius: "2px",
             border: "1px solid #d0d0d0",
             boxShadow: "0 2px 6px rgba(0,0,0,0.14)",
             whiteSpace: "nowrap" as const,
